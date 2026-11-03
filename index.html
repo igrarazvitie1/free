@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Викторина</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mint:#7CF2B0; --mint-d:#2FD07E;
+  --yellow:#FFD54A; --yellow-d:#E0A800;
+  --pink:#FF6FB5; --blue:#4DA8FF; --purple:#8B6CF6;
+  --ink:#1B1F3B; --ink2:#4A5070;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:#12142B; color:var(--ink); overflow:hidden;
+  user-select:none;
+}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:
+  radial-gradient(120% 100% at 50% 0%, #2B1E5C 0%, #171A38 45%, #0F1128 100%);}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:float 18s ease-in-out infinite}
+.b1{width:520px;height:520px;background:#7C4DFF;left:-140px;top:-120px}
+.b2{width:460px;height:460px;background:#00C2A8;right:-160px;top:10%;animation-delay:-4s}
+.b3{width:520px;height:520px;background:#FF3D7F;left:20%;bottom:-260px;animation-delay:-9s}
+.b4{width:380px;height:380px;background:#FFC400;right:12%;bottom:-160px;animation-delay:-13s;opacity:.35}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-40px) scale(1.12)}}
+
+.hud{position:fixed;top:14px;right:14px;z-index:60;display:flex;gap:10px;align-items:center}
+.hud.hidden{display:none}
+.coins{display:flex;align-items:center;gap:7px;background:#fff;border-radius:999px;
+  padding:7px 15px 7px 9px;font-weight:900;font-size:17px;color:var(--ink);
+  box-shadow:0 4px 0 rgba(0,0,0,.18),0 8px 18px rgba(0,0,0,.25)}
+.coins .ico{width:24px;height:24px;display:block}
+.helpbtn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(180deg,#fff,#E9EDF7);color:#3A3F63;font-weight:900;font-size:21px;
+  box-shadow:0 4px 0 rgba(0,0,0,.22),0 8px 16px rgba(0,0,0,.25);
+  transition:transform .12s, box-shadow .12s; font-family:inherit}
+.helpbtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.22)}
+
+#screens{position:fixed;inset:0;z-index:10}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  padding:20px 16px 28px;opacity:0;pointer-events:none;transform:translateY(14px) scale(.985);
+  transition:opacity .34s ease, transform .34s cubic-bezier(.2,.9,.3,1.3);overflow-y:auto;overflow-x:hidden}
+.screen.active{opacity:1;pointer-events:auto;transform:none}
+.screen::-webkit-scrollbar{width:8px}
+.screen::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:8px}
+
+.logo{font-weight:900;letter-spacing:3px;text-align:center;line-height:1;
+  font-size:clamp(32px,7.5vw,54px);
+  background:linear-gradient(90deg,var(--mint),var(--yellow),var(--pink));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}
+
+/* ---------- ЗАГРУЗКА: чистый спиннер по часовой ---------- */
+#screen-loading{justify-content:center;gap:22px}
+.load-wrap{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:22px}
+.load-title{color:#fff;font-weight:800;font-size:clamp(15px,3.4vw,19px);opacity:.92;text-align:center;margin:0}
+.spinner{width:56px;height:56px}
+.spinner svg{width:100%;height:100%;animation:spin .55s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.progress{width:100%;height:14px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
+.progress .bar{height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,#8FCBFF,#3D9BFF);
+  transition:width .35s ease;box-shadow:0 0 14px rgba(77,168,255,.7)}
+.fact-box{width:100%;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.14);
+  border-radius:20px;padding:16px 18px;backdrop-filter:blur(8px)}
+.fact-label{font-weight:900;font-size:12px;letter-spacing:2.5px;color:var(--yellow);margin-bottom:6px}
+.fact-box p{margin:0;color:#E8EBFF;font-size:15px;line-height:1.5;font-weight:700;min-height:48px;transition:opacity .22s}
+
+#screen-menu{justify-content:center;gap:36px}
+.menu-buttons{display:flex;flex-direction:column;align-items:center;gap:26px}
+.bigbtn{position:relative;border:none;cursor:pointer;border-radius:50%;display:grid;place-items:center;
+  transition:transform .13s, box-shadow .13s;font-family:inherit}
+.bigbtn:active{transform:translateY(6px) scale(.97)}
+.bigbtn.play{width:clamp(140px,34vw,190px);height:clamp(140px,34vw,190px);
+  background:linear-gradient(180deg,#8DF7BC,#2FD07E);
+  box-shadow:0 12px 0 #1F9E5E, 0 22px 40px rgba(47,208,126,.5), inset 0 -8px 0 rgba(0,0,0,.12)}
+.bigbtn.play:active{box-shadow:0 5px 0 #1F9E5E, 0 10px 24px rgba(47,208,126,.45)}
+.bigbtn.play svg{width:52%;height:52%;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
+.bigbtn.shop{width:clamp(96px,22vw,124px);height:clamp(96px,22vw,124px);
+  background:linear-gradient(180deg,#FFE27A,#FFC61A);
+  box-shadow:0 10px 0 #D19B00, 0 18px 34px rgba(255,198,26,.42), inset 0 -7px 0 rgba(0,0,0,.1)}
+.bigbtn.shop:active{box-shadow:0 4px 0 #D19B00, 0 8px 18px rgba(255,198,26,.4)}
+.bigbtn.shop svg{width:52%;height:52%;color:#5B3D00}
+
+.panel{width:100%;max-width:660px;background:rgba(255,255,255,.97);border-radius:26px;
+  padding:22px 20px 26px;box-shadow:0 10px 0 rgba(0,0,0,.16), 0 16px 30px rgba(0,0,0,.22);
+  margin:auto 0;position:relative}
+.ptitle{font-size:clamp(19px,4vw,24px);font-weight:900;margin:0 0 4px;text-align:center;letter-spacing:.3px}
+.psub{text-align:center;color:var(--ink2);font-weight:700;font-size:13.5px;margin:0 0 16px}
+
+.slider{-webkit-appearance:none;appearance:none;width:100%;height:16px;border-radius:999px;outline:none;
+  background:rgba(27,31,59,.12);margin:14px 0 6px;cursor:pointer;transition:background .25s;border:none}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:34px;height:34px;border-radius:50%;
+  background:#fff;border:5px solid var(--mint-d);cursor:grab;
+  box-shadow:0 4px 0 rgba(0,0,0,.18),0 0 0 6px rgba(124,242,176,.25);transition:transform .12s,box-shadow .25s}
+.slider::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.1)}
+.slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:5px solid var(--mint-d);
+  box-shadow:0 4px 0 rgba(0,0,0,.18);cursor:grab}
+.marks{display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:#9AA0BC;
+  letter-spacing:.2px;margin-top:2px;gap:4px;text-align:center}
+.marks span{flex:1}
+
+.diff-display{display:flex;flex-direction:column;align-items:center;gap:6px;margin:8px 0 4px}
+.diff-name{font-size:clamp(26px,6vw,34px);font-weight:900;letter-spacing:.5px;transition:color .25s;line-height:1.05}
+.diff-coins{display:inline-flex;align-items:center;gap:7px;background:#F2F5FF;border-radius:999px;
+  padding:6px 14px;font-weight:900;font-size:15px;color:#3A3F63}
+.diff-coins .ico{width:20px;height:20px}
+.diff-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+.diff-buttons button{border:none;border-radius:16px;padding:13px 8px;font-family:inherit;font-weight:900;
+  font-size:14px;cursor:pointer;background:#EDF0FA;color:#4A5070;transition:.16s;
+  box-shadow:0 4px 0 #D3D9EC;letter-spacing:.2px}
+.diff-buttons button:active{transform:translateY(3px);box-shadow:0 1px 0 #D3D9EC}
+.diff-buttons button.on{background:linear-gradient(180deg,#8DF7BC,#2FD07E);color:#08381F;box-shadow:0 4px 0 #1F9E5E}
+
+.next-btn{width:100%;margin-top:20px;border:none;border-radius:18px;padding:17px;font-family:inherit;
+  font-weight:900;font-size:17px;letter-spacing:.4px;cursor:pointer;color:#08381F;
+  background:linear-gradient(180deg,#8DF7BC,#2FD07E);
+  box-shadow:0 6px 0 #1F9E5E, 0 12px 24px rgba(47,208,126,.35);transition:.13s}
+.next-btn:active{transform:translateY(5px);box-shadow:0 1px 0 #1F9E5E}
+.next-btn[disabled]{opacity:.45;pointer-events:none}
+.next-btn.blue{background:linear-gradient(180deg,#8FCBFF,#3D9BFF);box-shadow:0 6px 0 #2470C4;color:#032C52}
+.next-btn.blue:active{box-shadow:0 1px 0 #2470C4}
+
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:9px;margin-top:6px}
+.cat-btn{display:flex;align-items:center;gap:9px;border:2px solid #E4E9F5;border-radius:15px;
+  padding:11px 10px;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3A3F63;
+  cursor:pointer;transition:.15s;text-align:left;line-height:1.15;box-shadow:0 3px 0 #E4E9F5}
+.cat-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #E4E9F5}
+.cat-btn .dot{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;
+  color:#fff;font-size:12px;font-weight:900;letter-spacing:0}
+.cat-btn.on{border-color:var(--mint-d);background:#F1FFF7;box-shadow:0 3px 0 var(--mint-d)}
+
+.count-display{text-align:center;font-size:clamp(46px,12vw,68px);font-weight:900;line-height:1;
+  color:var(--ink);margin:6px 0 2px;letter-spacing:-1px}
+.count-label{text-align:center;font-weight:800;color:#9AA0BC;font-size:12px;letter-spacing:2px;margin-bottom:10px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}
+.keypad button{border:none;border-radius:15px;background:#fff;border:2px solid #E4E9F5;
+  font-family:inherit;font-weight:900;font-size:21px;color:var(--ink);padding:14px 0;cursor:pointer;
+  box-shadow:0 4px 0 #DDE3F2;transition:.12s}
+.keypad button:active{transform:translateY(3px);box-shadow:0 1px 0 #DDE3F2}
+.keypad button.util{background:#F4F7FF;color:#4A5070;font-size:16px}
+.quick-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.quick-row button{border:none;border-radius:999px;padding:7px 15px;font-family:inherit;font-weight:900;
+  font-size:12.5px;background:#EDF0FA;color:#4A5070;cursor:pointer;box-shadow:0 3px 0 #D3D9EC;transition:.12s}
+.quick-row button:active{transform:translateY(2px);box-shadow:0 1px 0 #D3D9EC}
+
+#screen-question{justify-content:center;padding-top:12px}
+.q-wrap{width:100%;max-width:720px;display:flex;flex-direction:column;margin:0 auto}
+.q-top{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  color:#fff;font-weight:900;font-size:13px;letter-spacing:.6px;margin-bottom:10px;padding:0 4px;flex-wrap:wrap}
+.q-top .qtime{display:inline-flex;align-items:center;gap:5px}
+.q-top .qtime svg{width:15px;height:15px}
+.q-track{width:100%;height:10px;border-radius:999px;background:rgba(255,255,255,.16);
+  overflow:hidden;margin-bottom:16px}
+.q-track .fill{height:100%;width:0;border-radius:999px;transition:width .4s cubic-bezier(.2,.9,.3,1.2);
+  background:linear-gradient(90deg,var(--mint),var(--yellow))}
+.q-card{width:100%;background:#fff;border-radius:26px;padding:24px 22px;
+  box-shadow:0 10px 0 rgba(0,0,0,.16), 0 16px 30px rgba(0,0,0,.22);
+  position:relative;overflow:hidden}
+.q-card::before{content:"";position:absolute;top:0;left:0;right:0;height:7px;
+  background:linear-gradient(90deg,var(--mint),var(--yellow),var(--pink),var(--blue))}
+.q-cat{display:inline-block;background:#F1FFF7;color:#1F9E5E;font-weight:900;font-size:11px;
+  letter-spacing:1.6px;padding:5px 12px;border-radius:999px;margin-bottom:14px;text-transform:uppercase}
+.q-text{font-size:clamp(18px,3.6vw,24px);font-weight:900;line-height:1.32;margin:0 0 20px;color:var(--ink)}
+.answers{display:grid;gap:10px}
+.ans{border:2.5px solid #E4E9F5;background:#fff;border-radius:16px;padding:15px 16px;font-family:inherit;
+  font-weight:800;font-size:15.5px;color:#2A2F52;text-align:left;cursor:pointer;transition:.14s;
+  box-shadow:0 4px 0 #E4E9F5;line-height:1.3}
+.ans:active{transform:translateY(3px);box-shadow:0 1px 0 #E4E9F5}
+.ans.right{background:#DFFBEA;border-color:#2FD07E;box-shadow:0 4px 0 #2FD07E;color:#0B5B34;animation:pop .35s}
+.ans.wrong{background:#FFE5EC;border-color:#FF5C8A;box-shadow:0 4px 0 #FF5C8A;color:#8A0F32;animation:shake .4s}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.045)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.typebox{display:none;gap:9px;margin-top:4px}
+.typebox input{flex:1;border:2.5px solid #E4E9F5;border-radius:16px;padding:15px 16px;font-family:inherit;
+  font-weight:800;font-size:16px;outline:none;color:var(--ink);background:#fff;min-width:0}
+.typebox input:focus{border-color:var(--mint-d);box-shadow:0 0 0 4px rgba(124,242,176,.25)}
+.micbtn{width:56px;flex:0 0 auto;border:none;border-radius:16px;background:linear-gradient(180deg,#FFE27A,#FFC61A);
+  color:#5B3D00;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 0 #D19B00;transition:.12s}
+.micbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #D19B00}
+.micbtn.rec{animation:pulseRec 1s infinite}
+@keyframes pulseRec{0%,100%{box-shadow:0 4px 0 #D19B00}50%{box-shadow:0 4px 0 #D19B00,0 0 0 10px rgba(255,92,138,.35)}}
+.micbtn svg{width:24px;height:24px}
+.sendbtn{border:none;border-radius:16px;padding:0 18px;font-family:inherit;font-weight:900;font-size:14px;
+  color:#08381F;background:linear-gradient(180deg,#8DF7BC,#2FD07E);box-shadow:0 4px 0 #1F9E5E;cursor:pointer;
+  transition:.12s;flex:0 0 auto}
+.sendbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #1F9E5E}
+
+.answer-reveal{display:none;margin-top:14px;padding:12px 16px;border-radius:14px;font-weight:900;
+  text-align:center;font-size:15px;animation:pop .35s;line-height:1.3}
+.answer-reveal.show{display:block}
+.answer-reveal.good{background:#DFFBEA;color:#0B5B34;border:2px solid #2FD07E}
+.answer-reveal.bad{background:#FFE5EC;color:#8A0F32;border:2px solid #FF5C8A}
+
+/* ---------- ПОДСКАЗКИ: яркие иконки + бейдж-цифра ---------- */
+.hintbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;padding-top:14px;border-top:2px dashed #E4E9F5}
+.hintbtn{position:relative;display:flex;align-items:center;gap:8px;border:none;border-radius:14px;
+  padding:8px 12px 8px 8px;font-family:inherit;font-weight:900;font-size:11.5px;color:#2A2F52;
+  background:#F4F7FF;cursor:pointer;box-shadow:0 3px 0 #DDE3F2;transition:.12s;line-height:1.1}
+.hintbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #DDE3F2}
+.hintbtn .htile{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;
+  background:var(--hc,#3D9BFF);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.hintbtn .htile svg{width:17px;height:17px}
+.hintbtn .hlabel{max-width:74px;text-align:left}
+.hintbtn .hbadge{position:absolute;right:-6px;bottom:-6px;min-width:20px;height:20px;padding:0 5px;
+  border-radius:999px;background:#FF4F91;color:#fff;font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;border:2px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.hintbtn[disabled]{opacity:.4;pointer-events:none;box-shadow:none}
+.hintbtn[disabled] .hbadge{opacity:.6}
+
+/* ---------- СТАТИСТИКА ---------- */
+.stats-card{width:100%;max-width:560px;background:#fff;border-radius:26px;padding:22px 20px;
+  box-shadow:0 10px 0 rgba(0,0,0,.16), 0 16px 30px rgba(0,0,0,.22);margin:auto 0;position:relative}
+.stats-back{position:absolute;top:14px;left:14px;width:40px;height:40px;border-radius:12px;border:none;
+  background:#F4F7FF;color:#3A3F63;display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 3px 0 #DDE3F2;transition:.12s;z-index:2}
+.stats-back:active{transform:translateY(2px);box-shadow:0 1px 0 #DDE3F2}
+.stats-title{text-align:center;font-weight:900;font-size:22px;margin:0 0 12px}
+.stats-clock{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:14px;font-weight:900;font-size:14px;color:#1E3D63}
+.stats-clock .ci{display:inline-flex;align-items:center;gap:5px}
+.stats-clock .ci svg{width:17px;height:17px}
+.stats-clock b{color:#0B2C4D}
+.praise{text-align:center;font-weight:900;font-size:clamp(20px,4.5vw,27px);margin-bottom:12px;
+  background:linear-gradient(90deg,#FF6FB5,#FFD54A,#7CF2B0);-webkit-background-clip:text;
+  background-clip:text;color:transparent;letter-spacing:.5px;min-height:0}
+.praise:empty{display:none}
+table.stat{width:100%;border-collapse:separate;border-spacing:0;border-radius:18px;overflow:hidden;
+  box-shadow:0 6px 18px rgba(77,168,255,.28);font-size:15px}
+table.stat th{background:linear-gradient(180deg,#8FCBFF,#5BB0FF);color:#fff;font-weight:900;
+  padding:13px 14px;text-align:left;letter-spacing:.4px;font-size:13.5px}
+table.stat td{background:#EAF5FF;padding:13px 14px;font-weight:800;color:#1E3D63;border-top:2px solid #fff}
+table.stat tr:nth-child(even) td{background:#DEEDFF}
+table.stat td:last-child{text-align:right;font-weight:900}
+table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-size:17px;color:#0B2C4D}
+.plus{color:#1F9E5E !important}
+.minus{color:#D6336C !important}
+
+/* ---------- МАГАЗИН ---------- */
+#screen-shop{background:linear-gradient(180deg,#F3FBEE 0%, #EAF9E1 100%);padding-top:14px}
+.shop-head{width:100%;max-width:920px;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.iconbtn{width:44px;height:44px;border-radius:14px;border:none;background:#fff;color:#2F5D34;
+  display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 0 #C9E4BC;transition:.12s;flex:0 0 auto}
+.iconbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #C9E4BC}
+.shop-title{font-weight:900;font-size:20px;color:#2F5D34;letter-spacing:.4px;margin-right:auto}
+.shop-body{width:100%;max-width:920px;flex:1}
+.hint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.hint-card{background:#fff;border-radius:22px;padding:18px;box-shadow:0 5px 0 #D8EDCF,0 12px 26px rgba(79,174,92,.13);
+  display:flex;flex-direction:column;gap:8px}
+.hint-card .hico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(180deg,#8DF7BC,#2FD07E);color:#08381F;box-shadow:0 4px 0 #1F9E5E}
+.hint-card .hico svg{width:24px;height:24px}
+.hname{font-weight:900;font-size:16px;color:#26402A}
+.hdesc{font-size:12.5px;font-weight:800;color:#7A9A80;line-height:1.35;flex:1}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.price{display:flex;align-items:center;gap:4px;font-weight:900;font-size:15px;color:#1E6B2E}
+.price .ico{width:18px;height:18px}
+.add-btn{border:none;border-radius:12px;background:linear-gradient(180deg,#8DF7BC,#2FD07E);color:#08381F;
+  font-family:inherit;font-weight:900;font-size:12.5px;padding:10px 14px;cursor:pointer;
+  box-shadow:0 3px 0 #1F9E5E;transition:.12s;white-space:nowrap}
+.add-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #1F9E5E}
+.add-btn[disabled]{opacity:.45;pointer-events:none}
+.own-tag{font-size:11px;font-weight:900;color:#1F9E5E;background:#E4F7E9;border-radius:999px;
+  padding:4px 10px;display:inline-block;letter-spacing:.4px;align-self:flex-start}
+
+/* ---------- МОДАЛКА (увеличенная) ---------- */
+.modal{position:fixed;inset:0;z-index:200;display:none;place-items:center;padding:20px;
+  background:rgba(12,14,32,.66);backdrop-filter:blur(5px)}
+.modal.on{display:grid}
+.modal-card{width:100%;max-width:700px;background:#fff;border-radius:28px;padding:34px 36px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);animation:pop .3s}
+.modal-card h3{margin:0 0 14px;font-size:24px;font-weight:900;color:var(--ink)}
+.modal-card p{margin:0 0 22px;font-size:17px;line-height:1.65;color:#4A5070;font-weight:700}
+.modal-card .next-btn{margin-top:0;padding:18px;font-size:18px}
+@media(max-width:520px){
+  .modal-card{padding:24px 20px}
+  .modal-card h3{font-size:20px}
+  .modal-card p{font-size:15.5px}
+}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,120px);z-index:300;
+  background:#1B1F3B;color:#fff;font-weight:900;font-size:14px;padding:14px 22px;border-radius:999px;
+  box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.2,.9,.3,1.4);
+  pointer-events:none;max-width:88vw;text-align:center}
+.toast.on{transform:translate(-50%,0)}
+#fx{position:fixed;inset:0;z-index:150;pointer-events:none}
+
+@media(max-width:420px){
+  .hintbtn{font-size:10.5px;padding:7px 10px 7px 7px}
+  .hintbtn .htile{width:26px;height:26px}
+  .hintbtn .htile svg{width:15px;height:15px}
+  .q-card{padding:20px 16px}
+  .panel{padding:20px 16px 22px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+
+<div class="hud hidden" id="hud">
+  <div class="coins"><span class="ico" id="coinIco"></span><span id="coinCount">0</span></div>
+  <button class="helpbtn" onclick="openHelp()">?</button>
+</div>
+
+<main id="screens">
+
+  <!-- ЗАГРУЗКА -->
+  <section class="screen active" id="screen-loading">
+    <div class="load-wrap">
+      <div class="logo">ВИКТОРИНА</div>
+      <p class="load-title">Загрузка, пожалуйста подождите...</p>
+      <div class="spinner">
+        <svg viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="6"/>
+          <circle cx="25" cy="25" r="20" fill="none" stroke="#7CF2B0" stroke-width="6"
+                  stroke-linecap="round" stroke-dasharray="31 95" transform="rotate(-90 25 25)"/>
+        </svg>
+      </div>
+      <div class="progress"><div class="bar" id="loadBar"></div></div>
+      <div class="fact-box">
+        <div class="fact-label">А ВЫ ЗНАЛИ?</div>
+        <p id="factText">Загрузка интересных фактов...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- МЕНЮ -->
+  <section class="screen" id="screen-menu">
+    <div class="logo" style="margin-bottom:8px">ВИКТОРИНА</div>
+    <div class="menu-buttons">
+      <button class="bigbtn play" onclick="goDifficulty()" aria-label="Играть">
+        <svg viewBox="0 0 24 24"><path d="M8 4.6v14.8c0 .8.9 1.3 1.6.9l11-7.4c.6-.4.6-1.4 0-1.8l-11-7.4C8.9 3.3 8 3.8 8 4.6z" fill="#fff"/></svg>
+      </button>
+      <button class="bigbtn shop" onclick="openShop()" aria-label="Магазин подсказок">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.2 4.6 4h14.8L21 9.2"/>
+          <path d="M4.2 9.2v10.3h15.6V9.2"/>
+          <path d="M9.2 19.5v-5.3h5.6v5.3"/>
+          <path d="M3 9.2h18"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- СЛОЖНОСТЬ -->
+  <section class="screen" id="screen-difficulty">
+    <div class="panel">
+      <h2 class="ptitle">Выбор сложности</h2>
+      <p class="psub">Чем сложнее — тем больше монет за ответ</p>
+      <div class="diff-display">
+        <div class="diff-name" id="diffName">Средняя</div>
+        <div class="diff-coins"><span class="ico" id="diffCoinIco"></span><span id="diffCoins">+5 за ответ</span></div>
+      </div>
+      <input type="range" class="slider" id="diffRange" min="0" max="3" step="1" value="1">
+      <div class="marks"><span>Лёгкая</span><span>Средняя</span><span>Сложная</span><span>Очень сложная</span></div>
+      <div class="diff-buttons" id="diffButtons">
+        <button data-d="0">Лёгкая</button>
+        <button data-d="1">Средняя</button>
+        <button data-d="2">Сложная</button>
+        <button data-d="3">Очень сложная</button>
+      </div>
+      <button class="next-btn" onclick="goCategory()">Дальше</button>
+    </div>
+  </section>
+
+  <!-- КАТЕГОРИЯ -->
+  <section class="screen" id="screen-category">
+    <div class="panel">
+      <h2 class="ptitle">Категория вопросов</h2>
+      <p class="psub">Выбери тему или играй в микс</p>
+      <div class="cat-grid" id="catGrid"></div>
+      <button class="next-btn" onclick="goCount()">Дальше</button>
+    </div>
+  </section>
+
+  <!-- КОЛИЧЕСТВО -->
+  <section class="screen" id="screen-count">
+    <div class="panel">
+      <h2 class="ptitle">Сколько вопросов?</h2>
+      <div class="count-label">ВОПРОСОВ В ИГРЕ</div>
+      <div class="count-display" id="countDisplay">10</div>
+      <input type="range" class="slider" id="countRange" min="1" max="500" step="1" value="10">
+      <div class="marks"><span>1</span><span>125</span><span>250</span><span>375</span><span>500</span></div>
+      <div class="quick-row">
+        <button onclick="setCount(1)">1</button>
+        <button onclick="setCount(10)">10</button>
+        <button onclick="setCount(25)">25</button>
+        <button onclick="setCount(50)">50</button>
+        <button onclick="setCount(100)">100</button>
+        <button onclick="setCount(500)">500</button>
+      </div>
+      <div class="keypad" id="keypad">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k="c" class="util">C</button><button data-k="0">0</button>
+        <button data-k="b" class="util">←</button>
+      </div>
+      <button class="next-btn" onclick="startGame()">Начать игру</button>
+    </div>
+  </section>
+
+  <!-- ВОПРОС -->
+  <section class="screen" id="screen-question">
+    <div class="q-wrap">
+      <div class="q-top">
+        <span id="qProgress">Вопрос 1 из 10</span>
+        <span id="qReward">+5 за ответ</span>
+        <span class="qtime" id="qTime">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span>00:00</span>
+        </span>
+      </div>
+      <div class="q-track"><div class="fill" id="qBar"></div></div>
+      <div class="q-card">
+        <div class="q-cat" id="qCat">Категория</div>
+        <h2 class="q-text" id="qText">Вопрос</h2>
+        <div class="answers" id="answers"></div>
+        <div class="typebox" id="typeBox">
+          <input id="typeInput" placeholder="Введите ответ..." autocomplete="off" spellcheck="false">
+          <button class="micbtn" id="micBtn" title="Сказать голосом">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="9" y="2.5" width="6" height="11" rx="3"/>
+              <path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3.5"/>
+            </svg>
+          </button>
+          <button class="sendbtn" id="sendBtn">Ответить</button>
+        </div>
+        <div class="answer-reveal" id="answerReveal"></div>
+        <div class="hintbar" id="hintBar"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- СТАТИСТИКА -->
+  <section class="screen" id="screen-stats">
+    <div class="stats-card">
+      <button class="stats-back" onclick="statsBack()" aria-label="Назад">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <h2 class="stats-title" id="statsTitle">Статистика</h2>
+      <div class="praise" id="statsPraise"></div>
+      <div class="stats-clock" id="statsClock"></div>
+      <table class="stat" id="statsTable"></table>
+      <div id="statsButtons"></div>
+    </div>
+  </section>
+
+  <!-- МАГАЗИН ПОДСКАЗОК -->
+  <section class="screen" id="screen-shop">
+    <div class="shop-head">
+      <button class="iconbtn" onclick="goMenu()" aria-label="Назад">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="shop-title">МАГАЗИН ПОДСКАЗОК</div>
+    </div>
+    <div class="shop-body" id="shopBody"></div>
+  </section>
+
+</main>
+
+<canvas id="fx"></canvas>
+
+<div class="modal" id="helpModal">
+  <div class="modal-card">
+    <h3 id="helpTitle">Как играть</h3>
+    <p id="helpText">...</p>
+    <button class="next-btn" onclick="closeHelp()">Понятно</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   1. БАЗА ВОПРОСОВ
+   ========================================================= */
+const DB = {
+
+"География":{
+ easy:[
+  ["Столица России?",["Москва","Санкт-Петербург","Казань"],0],
+  ["Самый большой океан Земли?",["Атлантический","Тихий","Индийский"],1],
+  ["Самый маленький материк?",["Австралия","Антарктида","Европа"],0]
+ ],
+ medium:[
+  ["Самая высокая гора мира?",["Эльбрус","Эверест","Килиманджаро","Монблан"],1],
+  ["В какой стране находятся пирамиды Гизы?",["Египет","Мексика","Греция","Индия"],0],
+  ["Самое солёное море?",["Мёртвое","Красное","Чёрное","Средиземное"],0]
+ ],
+ hard:[
+  ["Самая большая по площади страна мира?",["Россия","Канада","Китай","США","Бразилия"],0],
+  ["Через какую страну НЕ проходит экватор?",["Кения","Бразилия","Индонезия","Египет","Эквадор"],3],
+  ["Самый большой остров мира?",["Гренландия","Мадагаскар","Борнео","Новая Гвинея","Суматра"],0]
+ ],
+ veryhard:[
+  ["Столица Канады?","Оттава"],
+  ["Самое глубокое озеро мира?","Байкал"],
+  ["Столица Австралии?","Канберра"]
+ ]
+},
+
+"Математика":{ easy:[], medium:[], hard:[], veryhard:[] },
+
+"Физика":{
+ easy:[
+  ["Что измеряет термометр?",["Давление","Температуру","Массу"],1],
+  ["В чём измеряется сила?",["Ньютон","Ватт","Джоуль"],0],
+  ["Что изучает физика?",["Явления природы","Живые организмы","Числа"],0]
+ ],
+ medium:[
+  ["Чему примерно равна скорость света?",["300 000 км/с","3 000 км/с","30 000 км/с","3 000 000 км/с"],0],
+  ["Какая формула у воды?",["CO₂","H₂O","O₂","NaCl"],1],
+  ["Что измеряет амперметр?",["Силу тока","Напряжение","Сопротивление","Мощность"],0]
+ ],
+ hard:[
+  ["Второй закон Ньютона записывается как...",["F = ma","E = mc²","F = mg","P = UI","A = Fs"],0],
+  ["В чём измеряется мощность?",["Джоуль","Ватт","Ньютон","Паскаль","Ампер"],1],
+  ["Формула кинетической энергии?",["mv²/2","mgh","Fs","UIt","mv"],0]
+ ],
+ veryhard:[
+  ["Сколько ватт в одном киловатте?","1000"],
+  ["В чём измеряется электрическое сопротивление?","Ом"],
+  ["Чему равно ускорение свободного падения на Земле (м/с²)?","9.8"]
+ ]
+},
+
+"Химия":{
+ easy:[
+  ["Химический символ кислорода?",["O","K","H"],0],
+  ["Из каких элементов состоит вода?",["Водород и кислород","Углерод и кислород","Натрий и хлор"],0],
+  ["Какой газ обозначается O₂?",["Кислород","Азот","Водород"],0]
+ ],
+ medium:[
+  ["Какой газ обозначается CO₂?",["Угарный","Углекислый","Азот","Кислород"],1],
+  ["Самый лёгкий химический элемент?",["Водород","Гелий","Литий","Кислород"],0],
+  ["Формула поваренной соли?",["NaCl","KCl","CaCO₃","NaOH"],0]
+ ],
+ hard:[
+  ["Сколько протонов в атоме углерода?",["4","5","6","7","8"],2],
+  ["Что за вещество NaCl?",["Сода","Поваренная соль","Известь","Селитра","Гипс"],1],
+  ["Формула серной кислоты?",["H₂SO₄","HCl","HNO₃","H₂CO₃","H₂S"],0]
+ ],
+ veryhard:[
+  ["Какой элемент обозначается символом Fe?","Железо"],
+  ["Какой элемент обозначается символом Au?","Золото"],
+  ["Какой газ составляет около 78% атмосферы Земли?","Азот"]
+ ]
+},
+
+"История":{
+ easy:[
+  ["Кто был первым космонавтом?",["Юрий Гагарин","Нил Армстронг","Герман Титов"],0],
+  ["В каком году началась Великая Отечественная война?",["1941","1914","1945"],0],
+  ["Кто был первым президентом России?",["Ельцин","Путин","Горбачёв"],0]
+ ],
+ medium:[
+  ["Кто основал Санкт-Петербург?",["Иван Грозный","Пётр I","Екатерина II","Николай II"],1],
+  ["Какая цивилизация построила пирамиды Гизы?",["Римская","Египетская","Греческая","Майя"],1],
+  ["В каком году человек впервые полетел в космос?",["1957","1961","1969","1975"],1]
+ ],
+ hard:[
+  ["В каком году пала Берлинская стена?",["1985","1989","1991","1993","1979"],1],
+  ["Кто был первым президентом США?",["Линкольн","Вашингтон","Джефферсон","Адамс","Франклин"],1],
+  ["В каком году началась Вторая мировая война?",["1937","1939","1941","1945","1914"],1]
+ ],
+ veryhard:[
+  ["В каком году произошла Куликовская битва?","1380"],
+  ["В каком году человек впервые вышел в открытый космос?","1965"],
+  ["В каком году распался СССР?","1991"]
+ ]
+},
+
+"Экономика":{
+ easy:[
+  ["Что такое деньги?",["Средство обмена","Игрушка","Еда"],0],
+  ["Где обычно хранят сбережения?",["В банке","В музее","На стадионе"],0],
+  ["Что такое цена?",["Стоимость товара","Вес товара","Цвет товара"],0]
+ ],
+ medium:[
+  ["Что такое инфляция?",["Рост цен","Падение цен","Рост зарплат","Налог"],0],
+  ["Как называется доход по акциям?",["Дивиденд","Штраф","Кредит","Вклад"],0],
+  ["Что такое бюджет?",["План доходов и расходов","Вид налога","Тип банка","Валюта"],0]
+ ],
+ hard:[
+  ["Что такое дефицит бюджета?",["Доходы больше расходов","Расходы больше доходов","Доходы равны расходам","Бюджета нет","Рост налогов"],1],
+  ["Что такое спрос?",["Желание и возможность купить товар","Количество товара на складе","Цена товара","Прибыль продавца","Налог на товар"],0],
+  ["Что такое ВВП?",["Валовой внутренний продукт","Внутренний валютный поток","Внешний валовой процент","Валюта внутреннего пользования","Вклад в валовой продукт"],0]
+ ],
+ veryhard:[
+  ["Как называется процесс обесценивания денег?","Инфляция"],
+  ["Как называется ценная бумага, дающая право на долю в компании?","Акция"],
+  ["Как называется главный банк России?","Центробанк"]
+ ]
+},
+
+"Биология":{
+ easy:[
+  ["Какой орган качает кровь?",["Сердце","Печень","Лёгкие"],0],
+  ["Сколько ног у паука?",["6","8","10"],1],
+  ["Какой орган отвечает за дыхание?",["Лёгкие","Сердце","Печень"],0]
+ ],
+ medium:[
+  ["Какой газ человек выдыхает?",["Кислород","Углекислый газ","Азот","Водород"],1],
+  ["Что изучает биология?",["Живую природу","Звёзды","Числа","Вещества"],0],
+  ["Сколько хромосом у человека?",["23","46","48","44"],1]
+ ],
+ hard:[
+  ["Как называется процесс деления клетки?",["Митоз","Осмос","Фотосинтез","Диффузия","Синтез"],0],
+  ["Сколько камер в сердце человека?",["2","3","4","5","6"],2],
+  ["Как называется зелёный пигмент растений?",["Хлорофилл","Гемоглобин","Меланин","Каротин","Кератин"],0]
+ ],
+ veryhard:[
+  ["Какой витамин вырабатывается в коже под действием солнца?","D"],
+  ["Как называется самая крупная клетка в организме человека?","Яйцеклетка"],
+  ["Какой орган производит инсулин?","Поджелудочная железа"]
+ ]
+},
+
+"Литература":{
+ easy:[
+  ["Кто автор «Сказки о рыбаке и рыбке»?",["Пушкин","Ершов","Чуковский"],0],
+  ["Кто написал «Колобка»?",["Народ","Пушкин","Толстой"],0],
+  ["Кто автор «Мухи-Цокотухи»?",["Чуковский","Пушкин","Барто"],0]
+ ],
+ medium:[
+  ["Кто написал «Евгения Онегина»?",["Лермонтов","Пушкин","Гоголь","Тургенев"],1],
+  ["Кто автор книг о Гарри Поттере?",["Джоан Роулинг","Толкин","Льюис","Кинг"],0],
+  ["Кто написал «Войну и мир»?",["Толстой","Достоевский","Тургенев","Чехов"],0]
+ ],
+ hard:[
+  ["Кто написал «Преступление и наказание»?",["Толстой","Достоевский","Тургенев","Гончаров","Чехов"],1],
+  ["Кто автор «Мастера и Маргариты»?",["Булгаков","Пастернак","Набоков","Горький","Шолохов"],0],
+  ["Кто написал «Тихий Дон»?",["Шолохов","Булгаков","Горький","Пастернак","Набоков"],0]
+ ],
+ veryhard:[
+  ["Кто написал роман «1984»?","Оруэлл"],
+  ["Кто автор поэмы «Мёртвые души»?","Гоголь"],
+  ["Кто написал «Героя нашего времени»?","Лермонтов"]
+ ]
+},
+
+"Астрономия":{
+ easy:[
+  ["Какая планета ближе всех к Солнцу?",["Меркурий","Венера","Земля"],0],
+  ["Что вращается вокруг Земли?",["Луна","Солнце","Марс"],0],
+  ["Сколько планет в Солнечной системе?",["7","8","9"],1]
+ ],
+ medium:[
+  ["Самая большая планета Солнечной системы?",["Юпитер","Сатурн","Земля","Нептун"],0],
+  ["Какая планета известна своими кольцами?",["Сатурн","Юпитер","Уран","Нептун"],0],
+  ["Как называется наша планета?",["Земля","Марс","Венера","Меркурий"],0]
+ ],
+ hard:[
+  ["Что такое световой год?",["Расстояние","Время","Скорость","Яркость","Масса"],0],
+  ["Какая планета вращается «лёжа на боку»?",["Уран","Нептун","Сатурн","Венера","Марс"],0],
+  ["Что такое чёрная дыра?",["Объект с огромной гравитацией","Планета","Звезда","Галактика","Комета"],0]
+ ],
+ veryhard:[
+  ["Как называется наша галактика?","Млечный Путь"],
+  ["Как называется ближайшая к Солнцу звезда?","Проксима Центавра"],
+  ["Как называется ближайшая к нам крупная галактика?","Андромеда"]
+ ]
+},
+
+"Информатика":{
+ easy:[
+  ["Что означает «ПК»?",["Персональный компьютер","Постоянный контакт","Программный код"],0],
+  ["Сколько бит в одном байте?",["4","8","16"],1],
+  ["Что такое монитор?",["Устройство вывода","Устройство ввода","Память"],0]
+ ],
+ medium:[
+  ["Что такое процессор?",["Устройство обработки данных","Память","Видеокарта","Диск"],0],
+  ["Что делает браузер?",["Открывает сайты","Печатает","Считает","Рисует"],0],
+  ["Что такое ОЗУ?",["Оперативная память","Оптическое запоминающее устройство","Основной звуковой усилитель","Общее запоминающее устройство"],0]
+ ],
+ hard:[
+  ["Сколько цветов в 8-битном цвете?",["64","128","256","512","1024"],2],
+  ["Какая система счисления используется в компьютерах?",["Двоичная","Восьмеричная","Десятичная","Шестнадцатеричная","Троичная"],0],
+  ["Что такое HTML?",["Язык разметки","Язык программирования","База данных","Операционная система","Протокол"],0]
+ ],
+ veryhard:[
+  ["Переведи двоичное число 1010 в десятичную систему","10"],
+  ["Как называется устройство для вывода текста и картинок на бумагу?","Принтер"],
+  ["Сколько байт в одном килобайте (по стандарту)?","1024"]
+ ]
+},
+
+"Музыка":{
+ easy:[
+  ["Сколько струн у классической гитары?",["4","6","8"],1],
+  ["У какого инструмента есть клавиши?",["Пианино","Скрипка","Флейта"],0]
+ ],
+ medium:[
+  ["Кто написал «Лунную сонату»?",["Бах","Бетховен","Моцарт","Шопен"],1],
+  ["Сколько нот в октаве?",["5","6","7","8"],2]
+ ],
+ hard:[
+  ["Что такое темп в музыке?",["Скорость исполнения","Громкость","Высота","Тембр","Ритм"],0],
+  ["Сколько линий в нотном стане?",["4","5","6","7","8"],1]
+ ],
+ veryhard:[
+  ["Как называется знак, повышающий ноту на полутон?","Диез"],
+  ["Какой инструмент называют «королём инструментов»?","Орган"]
+ ]
+},
+
+"Спорт":{
+ easy:[
+  ["Сколько игроков в футбольной команде на поле?",["9","11","13"],1],
+  ["Что забивают в баскетболе?",["Гол","Мяч в кольцо","Шайбу"],1]
+ ],
+ medium:[
+  ["Сколько колец на олимпийском флаге?",["4","5","6","7"],1],
+  ["Как часто проводят летние Олимпийские игры?",["Каждый год","Раз в 2 года","Раз в 4 года","Раз в 5 лет"],2]
+ ],
+ hard:[
+  ["В какой стране зародились Олимпийские игры?",["Греция","Рим","Египет","Китай","Франция"],0],
+  ["Сколько игроков одной команды в волейболе на площадке?",["5","6","7","8","9"],1]
+ ],
+ veryhard:[
+  ["Сколько минут длится футбольный матч (основное время)?","90"],
+  ["Как называется игра с ракеткой и воланом?","Бадминтон"]
+ ]
+},
+
+"Искусство":{
+ easy:[
+  ["Кто нарисовал «Мону Лизу»?",["Леонардо да Винчи","Пикассо","Ван Гог"],0],
+  ["Что такое холст?",["Ткань для рисования","Краска","Кисть"],0]
+ ],
+ medium:[
+  ["Кто написал «Звёздную ночь»?",["Ван Гог","Моне","Пикассо","Дали"],0],
+  ["Что изображает пейзаж?",["Природу","Человека","Предметы","Ничего"],0]
+ ],
+ hard:[
+  ["Кто автор «Чёрного квадрата»?",["Малевич","Кандинский","Пикассо","Брак","Шагал"],0],
+  ["В каком музее хранится «Мона Лиза»?",["Лувр","Эрмитаж","Уффици","Прадо","Третьяковка"],0]
+ ],
+ veryhard:[
+  ["Как называют художника, который рисует море?","Маринист"],
+  ["Кто расписал потолок Сикстинской капеллы?","Микеланджело"]
+ ]
+},
+
+"Животные":{
+ easy:[
+  ["Самое быстрое наземное животное?",["Гепард","Лев","Лошадь"],0],
+  ["Кто из них птица?",["Пингвин","Летучая мышь","Кит"],0]
+ ],
+ medium:[
+  ["Самое высокое животное на Земле?",["Жираф","Слон","Медведь","Верблюд"],0],
+  ["Сколько сердец у осьминога?",["1","2","3","4"],2]
+ ],
+ hard:[
+  ["Какое животное не умеет прыгать?",["Слон","Кролик","Тигр","Лошадь","Заяц"],0],
+  ["Какое из этих животных — сумчатое?",["Кенгуру","Волк","Лось","Бобр","Енот"],0]
+ ],
+ veryhard:[
+  ["Как называется детёныш овцы?","Ягнёнок"],
+  ["Какая птица считается символом мудрости?","Сова"]
+ ]
+},
+
+"Растения":{
+ easy:[
+  ["Какое дерево считается самым высоким?",["Секвойя","Дуб","Берёза"],0],
+  ["Что нужно растению для роста?",["Свет и вода","Только вода","Только свет"],0]
+ ],
+ medium:[
+  ["Какой цветок — символ Нидерландов?",["Тюльпан","Роза","Ромашка","Лилия"],0],
+  ["Какой газ выделяют растения при фотосинтезе?",["Кислород","Азот","Водород","Метан"],0]
+ ],
+ hard:[
+  ["Как называется процесс испарения воды листьями?",["Транспирация","Фотосинтез","Дыхание","Осмос","Диффузия"],0],
+  ["Самое большое дерево по объёму?",["Секвойя","Баобаб","Дуб","Эвкалипт","Баньян"],0]
+ ],
+ veryhard:[
+  ["Как называется плод дуба?","Жёлудь"],
+  ["Как называется наука о растениях?","Ботаника"]
+ ]
+},
+
+"Кулинария":{
+ easy:[
+  ["Из чего делают хлеб?",["Мука","Сахар","Соль"],0],
+  ["Какой фрукт жёлтый и продолговатый?",["Банан","Яблоко","Груша"],0]
+ ],
+ medium:[
+  ["Что такое эспрессо?",["Кофе","Чай","Сок","Молоко"],0],
+  ["Из какой крупы готовят ризотто?",["Рис","Гречка","Пшено","Кукуруза"],0]
+ ],
+ hard:[
+  ["Что такое «соте»?",["Способ приготовления","Соус","Салат","Десерт","Напиток"],0],
+  ["Родина пиццы?",["Италия","Франция","Испания","Греция","США"],0]
+ ],
+ veryhard:[
+  ["Из чего делают гуакамоле? (основной ингредиент)","Авокадо"],
+  ["Какой напиток получают из винограда?","Вино"]
+ ]
+},
+
+"Кино":{
+ easy:[
+  ["Что показывают в кинотеатре?",["Фильмы","Книги","Картины"],0],
+  ["Кто руководит съёмками фильма?",["Режиссёр","Повар","Врач"],0]
+ ],
+ medium:[
+  ["Что такое «Оскар»?",["Кинопремия","Театр","Фестиваль","Мультфильм"],0],
+  ["Кто сыграл главную роль в фильме «Титаник»?",["Леонардо ДиКаприо","Брэд Питт","Том Круз","Джонни Депп"],0]
+ ],
+ hard:[
+  ["Кто снял фильм «Интерстеллар»?",["Кристофер Нолан","Стивен Спилберг","Джеймс Кэмерон","Мартин Скорсезе","Дэвид Финчер"],0],
+  ["Какой мультфильм стал первым полнометражным у Disney?",["Белоснежка","Золушка","Пиноккио","Бэмби","Дамбо"],0]
+ ],
+ veryhard:[
+  ["Как зовут главного злодея оригинальной трилогии «Звёздных войн»?","Дарт Вейдер"],
+  ["Как называется премия за худший фильм года?","Золотая малина"]
+ ]
+}
+
+};
+
+/* =========================================================
+   2. ГЕНЕРАТОР МАТЕМАТИКИ (240 вопросов)
+   ========================================================= */
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function makeChoice(q, correct, optCount){
+  const correctStr = String(correct);
+  const opts = new Set([correctStr]);
+  let guard = 0;
+  while(opts.size < optCount && guard++ < 300){
+    const delta = randInt(1, Math.max(3, Math.round(Math.abs(Number(correct))*0.35)+2));
+    const sign = Math.random() < .5 ? -1 : 1;
+    let cand = Number(correct) + sign*delta;
+    if(!isFinite(cand)) cand = randInt(1,100);
+    if(cand < 0) cand = Math.abs(cand);
+    if(cand === Number(correct)) continue;
+    opts.add(String(cand));
+  }
+  const arr = shuffle([...opts]);
+  return [q, arr, arr.indexOf(correctStr)];
+}
+(function buildMath(){
+  const M = DB["Математика"];
+  for(let i=0;i<60;i++){
+    const t = i % 4;
+    if(t===0){ const a=randInt(2,99), b=randInt(2,99); M.easy.push(makeChoice(a+' + '+b+' = ?', a+b, 3)); }
+    else if(t===1){ const a=randInt(10,99), b=randInt(2,a-1); M.easy.push(makeChoice(a+' − '+b+' = ?', a-b, 3)); }
+    else if(t===2){ const a=randInt(2,10), b=randInt(2,10); M.easy.push(makeChoice(a+' × '+b+' = ?', a*b, 3)); }
+    else { const b=randInt(2,9), x=randInt(2,9); M.easy.push(makeChoice((b*x)+' ÷ '+b+' = ?', x, 3)); }
+  }
+  for(let i=0;i<60;i++){
+    const t = i % 4;
+    if(t===0){ const a=randInt(2,9), x=randInt(2,12); M.medium.push(makeChoice('Реши уравнение: '+a+'x = '+(a*x), x, 4)); }
+    else if(t===1){ const p=randInt(5,50), n=randInt(1,20)*10; M.medium.push(makeChoice('Сколько будет '+p+'% от '+n+'?', Math.round(n*p/100), 4)); }
+    else if(t===2){ const n=randInt(2,10); M.medium.push(makeChoice('Чему равно '+n+' во второй степени?', n*n, 4)); }
+    else { const a=randInt(2,20); M.medium.push(makeChoice('Периметр квадрата со стороной '+a+' см?', 4*a, 4)); }
+  }
+  for(let i=0;i<60;i++){
+    const t = i % 4;
+    if(t===0){
+      const x=randInt(2,15), a=randInt(2,5), c=randInt(1,a-1), b=randInt(1,20);
+      const d=(a-c)*x+b;
+      M.hard.push(makeChoice('Реши: '+a+'x + '+b+' = '+c+'x + '+d, x, 5));
+    }
+    else if(t===1){ const n=randInt(4,20); M.hard.push(makeChoice('Чему равен √'+(n*n)+'?', n, 5)); }
+    else if(t===2){ const base=randInt(2,10)*2, h=randInt(2,15); M.hard.push(makeChoice('Площадь треугольника с основанием '+base+' и высотой '+h+'?', base*h/2, 5)); }
+    else { const a=randInt(2,4), x=randInt(2,12), b=randInt(1,15); M.hard.push(makeChoice('Реши: '+a+'(x + '+b+') = '+(a*(x+b)), x, 5)); }
+  }
+  for(let i=0;i<60;i++){
+    const t = i % 4;
+    if(t===0){ const x=randInt(2,20), b=randInt(1,25); M.veryhard.push(['Реши уравнение: 2x + '+b+' = '+(2*x+b)+'. Чему равен x?', String(x)]); }
+    else if(t===1){ const n=randInt(4,20); M.veryhard.push(['Реши: x² = '+(n*n)+', x > 0', String(n)]); }
+    else if(t===2){ const x=randInt(2,15), a=randInt(3,6), b=randInt(1,20); M.veryhard.push(['Реши: '+a+'x − '+b+' = '+(a*x-b), String(x)]); }
+    else { const x=randInt(2,10); M.veryhard.push(['Реши уравнение: 4x − 7 = 2x + '+(2*x-7), String(x)]); }
+  }
+})();
+
+/* =========================================================
+   3. GITHUB-ХРАНИЛИЩА ПО КАТЕГОРИЯМ
+   ========================================================= */
+const GITHUB_BASE = 'https://raw.githubusercontent.com/quizmaster-db/quiz-data/main/';
+const CAT_SLUGS = {
+  'География':'geografia', 'Математика':'matematika', 'Физика':'fizika', 'Химия':'himiya',
+  'История':'istoriya', 'Экономика':'ekonomika', 'Биология':'biologiya', 'Литература':'literatura',
+  'Астрономия':'astronomiya', 'Информатика':'informatika', 'Музыка':'muzyka', 'Спорт':'sport',
+  'Искусство':'iskusstvo', 'Животные':'zhivotnye', 'Растения':'rasteniya', 'Кулинария':'kulinariya',
+  'Кино':'kino'
+};
+let remotePromise = null;
+function fetchWithTimeout(url, ms){
+  return new Promise((resolve, reject)=>{
+    const t = setTimeout(()=>reject(new Error('timeout')), ms||3000);
+    fetch(url, {cache:'no-cache'}).then(r=>{clearTimeout(t);resolve(r);}).catch(e=>{clearTimeout(t);reject(e);});
+  });
+}
+function mergeRemote(cat, data){
+  if(!data) return;
+  ['easy','medium','hard'].forEach(k=>{
+    if(Array.isArray(data[k])){
+      data[k].forEach(item=>{
+        if(!item || !item.q || !Array.isArray(item.options) || item.answer === undefined) return;
+        const opts = item.options.slice();
+        let idx = opts.indexOf(item.answer);
+        if(idx < 0){ opts.push(item.answer); idx = opts.length - 1; }
+        DB[cat][k].push([item.q, opts, idx]);
+      });
+    }
+  });
+  if(Array.isArray(data.veryhard)){
+    data.veryhard.forEach(item=>{
+      if(item && item.q && item.answer !== undefined) DB[cat].veryhard.push([item.q, String(item.answer)]);
+    });
+  }
+}
+async function loadRemoteQuestions(){
+  if(remotePromise) return remotePromise;
+  remotePromise = (async ()=>{
+    const jobs = Object.entries(CAT_SLUGS).map(async ([cat, slug])=>{
+      try{
+        const r = await fetchWithTimeout(GITHUB_BASE + slug + '.json', 3500);
+        if(!r.ok) return;
+        const data = await r.json();
+        mergeRemote(cat, data);
+      }catch(e){}
+    });
+    await Promise.allSettled(jobs);
+  })();
+  return remotePromise;
+}
+
+/* =========================================================
+   4. УТИЛИТЫ, ID ВОПРОСОВ, LOCALSTORAGE
+   ========================================================= */
+const CATEGORIES = Object.keys(DB);
+const CAT_COLORS = ['#FF6FB5','#4DA8FF','#7CF2B0','#FFD54A','#8B6CF6','#FF9F4A','#2FD07E','#5BC0EB','#F45B69','#A0E7A0','#FF7A4A','#42C6A0','#B48CFF','#FF9FDC','#8EC5FF','#C5E86C','#FFB74A'];
+const DIFFS = [
+  {name:'Лёгкая',        coins:1,  key:'easy',     opts:3, color:'#2FD07E'},
+  {name:'Средняя',       coins:5,  key:'medium',   opts:4, color:'#F0B400'},
+  {name:'Сложная',       coins:10, key:'hard',     opts:5, color:'#FF8A3D'},
+  {name:'Очень сложная', coins:20, key:'veryhard', opts:0, color:'#FF4F91'}
+];
+
+const coinSVG = '<svg viewBox="0 0 24 24" class="ico"><circle cx="12" cy="12" r="11" fill="#E8A200"/><circle cx="12" cy="12" r="8.6" fill="#FFD54A"/><path d="M12 6.4l1.7 3.5 3.8.5-2.8 2.6.7 3.8-3.4-1.8-3.4 1.8.7-3.8-2.8-2.6 3.8-.5z" fill="#E8A200"/></svg>';
+const clockSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+const HINT_TYPES = [
+  {key:'fifty',   name:'50 на 50', price:30, color:'#3D9BFF', desc:'Убирает два неверных варианта',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/><path d="M4 7h16"/><path d="M4 17h10"/></svg>'},
+  {key:'hint',    name:'Буква',    price:20, color:'#E0A800', desc:'Показывает первую букву ответа',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19l7-14 7 14"/><path d="M8.5 14h7"/></svg>'},
+  {key:'skip',    name:'Пропуск',  price:25, color:'#FF7A3D', desc:'Пропустить вопрос без штрафа',       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l8 7-8 7z"/><path d="M17 5v14"/></svg>'},
+  {key:'replace', name:'Замена',   price:40, color:'#8B6CF6', desc:'Заменить вопрос на другой',           icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4"/><path d="M4 13a8 8 0 0 0 14 4"/><path d="M6 5v4h4"/><path d="M18 19v-4h-4"/></svg>'},
+  {key:'answer',  name:'Ответ',    price:60, color:'#FF4F91', desc:'Показывает правильный ответ',         icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'}
+];
+const HINT_ICONS = {};
+HINT_TYPES.forEach(h=>HINT_ICONS[h.key] = h.icon);
+
+function $(id){return document.getElementById(id);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+function norm(s){return String(s).toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]/gi,'').trim();}
+
+/* стабильный id вопроса: hash(категория|сложность|текст|ответ)
+   — работает и для локальных, и для гитхаб-вопросов без доп. полей */
+function hashStr(s){
+  let h = 2166136261;
+  for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
+function qidFor(cat, key, q){
+  return cat + '|' + key + '|' + hashStr(norm(q.q) + '::' + norm(q.answer));
+}
+function markUsed(q){
+  if(!q || !q.id) return;
+  if(!S.usedIds) S.usedIds = {};
+  S.usedIds[q.id] = Date.now();
+  const keys = Object.keys(S.usedIds);
+  if(keys.length > 4000){
+    keys.sort((a,b)=>S.usedIds[a]-S.usedIds[b]);
+    keys.slice(0, keys.length - 3000).forEach(k=>delete S.usedIds[k]);
+  }
+  save();
+}
+
+const SAVE_KEY = 'viktorina_v2';
+const defaults = {
+  coins:0, difficulty:1, category:'__mix', totalQuestions:10,
+  hints:{fifty:0, hint:0, skip:0, replace:0, answer:0},
+  usedIds:{}
+};
+let S = Object.assign({}, defaults, JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'));
+if(!S.hints || typeof S.hints !== 'object') S.hints = {fifty:0,hint:0,skip:0,replace:0,answer:0};
+['fifty','hint','skip','replace','answer'].forEach(k=>{ if(typeof S.hints[k] !== 'number') S.hints[k] = 0; });
+if(!S.usedIds || typeof S.usedIds !== 'object') S.usedIds = {};
+if(S.category !== '__mix' && !CATEGORIES.includes(S.category)) S.category = '__mix';
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+
+const ses = {
+  queue:[], index:0, correct:0, wrong:0, earned:0, penalty:0, locked:false,
+  totalMs:0, runStart:null, times:[], qStart:null, statsFinal:false
+};
+
+/* =========================================================
+   5. ЗВУК
+   ========================================================= */
+let actx = null;
+function ac(){
+  if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } }
+  if(actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function tone(freq, start, dur, type, vol){
+  const c = ac(); if(!c) return;
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type||'sine'; o.frequency.value = freq;
+  o.connect(g); g.connect(c.destination);
+  const t0 = c.currentTime + start;
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol||0.15, t0 + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.start(t0); o.stop(t0 + dur + 0.03);
+}
+function sndClick(){ tone(720, 0, 0.06, 'square', 0.05); }
+function sndWin(){ [523.25, 659.25, 783.99, 1046.5].forEach((f,i)=>tone(f, i*0.085, 0.22, 'triangle', 0.16)); tone(1567.98, 0.36, 0.32, 'sine', 0.1); }
+function sndLose(){ tone(220, 0, 0.16, 'sawtooth', 0.09); tone(155, 0.13, 0.28, 'sawtooth', 0.09); }
+function sndCoin(){ tone(1200, 0, 0.07, 'square', 0.06); tone(1600, 0.06, 0.09, 'square', 0.05); }
+
+/* =========================================================
+   6. ФЕЙЕРВЕРК
+   ========================================================= */
+const fxCanvas = $('fx'), fxCtx = fxCanvas.getContext('2d');
+let particles = [], fxRunning = false;
+function resizeFx(){ fxCanvas.width = innerWidth; fxCanvas.height = innerHeight; }
+resizeFx(); addEventListener('resize', resizeFx);
+function boom(x, y){
+  const colors = ['#7CF2B0','#FFD54A','#FF6FB5','#4DA8FF','#FFFFFF','#FF9F4A','#8B6CF6'];
+  for(let i=0;i<46;i++){
+    const a = Math.random()*Math.PI*2, sp = 2 + Math.random()*7;
+    particles.push({x, y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, life:1,
+      decay:0.012 + Math.random()*0.014, size:2 + Math.random()*3.5,
+      color: colors[Math.floor(Math.random()*colors.length)]});
+  }
+  if(!fxRunning){ fxRunning = true; requestAnimationFrame(fxLoop); }
+}
+function fireworks(){
+  for(let i=0;i<3;i++){
+    setTimeout(()=>boom(innerWidth*(0.25 + Math.random()*0.5), innerHeight*(0.2 + Math.random()*0.35)), i*180);
+  }
+}
+function fxLoop(){
+  fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.085; p.vx *= 0.985; p.vy *= 0.985;
+    p.life -= p.decay;
+    if(p.life <= 0){ particles.splice(i,1); continue; }
+    fxCtx.globalAlpha = Math.max(p.life, 0);
+    fxCtx.fillStyle = p.color;
+    fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2); fxCtx.fill();
+  }
+  fxCtx.globalAlpha = 1;
+  if(particles.length) requestAnimationFrame(fxLoop);
+  else { fxRunning = false; fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height); }
+}
+
+/* =========================================================
+   7. ТАЙМЕР
+   ========================================================= */
+let timerInt = null;
+function fmtTime(sec){
+  const m = Math.floor(sec/60), s = sec%60;
+  return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function getElapsed(){ return ses.totalMs + (ses.runStart ? Date.now() - ses.runStart : 0); }
+function updateTimerUI(){
+  const el = $('qTime');
+  if(!el) return;
+  const span = el.querySelector('span');
+  if(span) span.textContent = fmtTime(Math.floor(getElapsed()/1000));
+}
+function startTimer(){
+  if(ses.runStart) return;
+  ses.runStart = Date.now();
+  if(timerInt) clearInterval(timerInt);
+  timerInt = setInterval(updateTimerUI, 500);
+  updateTimerUI();
+}
+function pauseTimer(){
+  if(ses.runStart){ ses.totalMs += Date.now() - ses.runStart; ses.runStart = null; }
+  if(timerInt){ clearInterval(timerInt); timerInt = null; }
+  updateTimerUI();
+}
+
+/* =========================================================
+   8. ЭКРАНЫ
+   ========================================================= */
+const HELP = {
+  'screen-menu':'Это главное меню. Большая кнопка со стрелкой запускает игру. Кнопка с магазином ниже открывает магазин подсказок, где можно потратить монеты. Монеты начисляются за правильные ответы и сохраняются на этом устройстве.',
+  'screen-difficulty':'Выбери сложность: двигай ползунок или нажимай кнопки. Чем выше сложность, тем больше монет за правильный ответ и тем больше вариантов ответа. Когда выберешь — нажми «Дальше».',
+  'screen-category':'Выбери тему вопросов. «Разные вопросы» — микс из всех категорий. Выбранная категория подсвечивается зелёным. Затем нажми «Дальше».',
+  'screen-count':'Выбери количество вопросов — от 1 до 500. Двигай ползунок или вводи число кнопками. Текущее количество показано крупными цифрами. Потом нажми «Начать игру».',
+  'screen-question':'Прочитай вопрос и выбери правильный вариант. На уровне «Очень сложная» вариантов нет — ответ нужно ввести в поле или надиктовать голосом. При ошибке правильный ответ подсвечивается и показывается отдельной плашкой. Внизу под вопросом — купленные подсказки, их количество видно яркой цифрой в углу кнопки. Время прохождения видно по часам вверху.',
+  'screen-stats':'Это статистика игры. В таблице видно, сколько ответов было правильных и неправильных, сколько монет ты заработал и сколько ушло на штрафы. Над таблицей — общее время и среднее время на вопрос. Внизу — итог.',
+  'screen-shop':'Это магазин подсказок. Здесь можно купить пять видов подсказок за монеты. Купленные подсказки появятся под вопросом во время игры и сохранятся на этом устройстве.'
+};
+let currentScreen = 'screen-loading';
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = $(id); if(el) el.classList.add('active');
+  $('hud').classList.toggle('hidden', id === 'screen-loading');
+  if(id === 'screen-shop') refreshShop();
+  currentScreen = id;
+}
+function openHelp(){
+  $('helpTitle').textContent = 'Как играть';
+  $('helpText').textContent = HELP[currentScreen] || 'Выбери, что делать дальше.';
+  $('helpModal').classList.add('on'); sndClick();
+}
+function closeHelp(){ $('helpModal').classList.remove('on'); sndClick(); }
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._tm); t._tm = setTimeout(()=>t.classList.remove('on'), 2100);
+}
+
+/* =========================================================
+   9. МОНЕТЫ
+   ========================================================= */
+function updateCoins(){ $('coinCount').textContent = fmt(S.coins); }
+function addCoins(n){ S.coins = Math.max(0, S.coins + n); updateCoins(); save(); }
+
+/* =========================================================
+   10. ЗАГРУЗКА
+   ========================================================= */
+const FACTS = [
+"У осьминога три сердца и голубая кровь.",
+"Мёд не портится: археологи находили съедобный мёд возрастом более 3000 лет.",
+"Венера вращается вокруг своей оси медленнее, чем вокруг Солнца.",
+"Бананы — это ягоды, а малина — нет.",
+"Человеческий глаз различает около 10 миллионов оттенков.",
+"Скорость света — примерно 300 000 километров в секунду.",
+"По мнению многих учёных, самая длинная река мира — Амазонка.",
+"У кошек потеют только подушечки лап.",
+"Эйфелева башня летом становится выше примерно на 15 сантиметров.",
+"Молния разогревает воздух вокруг себя до 30 000 градусов.",
+"В одной капле воды может быть больше живых организмов, чем людей на Земле.",
+"Улитка может спать до трёх лет.",
+"Сердце человека за сутки перекачивает около 7 000 литров крови.",
+"У акул нет ни одной кости — только хрящи.",
+"На Луне нет атмосферы, поэтому там не бывает звуков.",
+"Пингвины не умеют летать, но отлично плавают.",
+"Самое глубокое место на Земле — Марианская впадина, около 11 километров.",
+"Бумага была изобретена в Китае примерно 2000 лет назад.",
+"У муравьёв нет лёгких — они дышат через крошечные отверстия.",
+"Земля вращается со скоростью около 1670 км/ч на экваторе.",
+"У жирафа столько же шейных позвонков, сколько у человека — семь.",
+"Свет от Солнца до Земли идёт примерно 8 минут.",
+"В ДНК человека около 3 миллиардов «букв» кода.",
+"Самая маленькая страна в мире — Ватикан.",
+"Гелий становится твёрдым только при очень высоком давлении.",
+"У слона самое большое сердце среди сухопутных животных.",
+"Человек примерно на 60% состоит из воды.",
+"Первая компьютерная мышь была деревянной.",
+"Пчёл можно обучить распознавать человеческие лица.",
+"Один день на Венере длиннее одного года на Венере.",
+"Кошачье мурлыканье может ускорять заживление тканей.",
+"Страус — самая крупная птица, но он не летает.",
+"Тихоокеанский осьминог может менять цвет за доли секунды.",
+"Римский Колизей мог вмещать около 50 000 зрителей.",
+"Мозг использует около 20% всей энергии тела.",
+"У медуз нет мозга, но есть нервная сеть.",
+"Мировой океан до сих пор изучен менее чем на 20%.",
+"Картофельная батарейка действительно может давать электричество.",
+"Самая высокая гора от подножия до вершины — Мауна-Кеа.",
+"Белые медведи имеют прозрачный мех, а кожа у них чёрная.",
+"Звук не может распространяться в вакууме.",
+"Первое в мире метро открылось в Лондоне в 1863 году.",
+"У лошадей почти нет рвотного рефлекса.",
+"Стрекозы существуют на Земле более 300 миллионов лет.",
+"Алмаз и графит состоят из одного и того же элемента — углерода.",
+"Солнце содержит 99,8% всей массы Солнечной системы.",
+"Сумма всех чисел от 1 до 100 равна 5050.",
+"В Антарктиде находится около 70% всей пресной воды планеты.",
+"Отпечаток языка у каждого человека уникален.",
+"За год человек делает около 8 миллионов вдохов."
+];
+let factIdx = 0, factTimer = null;
+function startLoading(){
+  $('coinIco').innerHTML = coinSVG;
+  $('diffCoinIco').innerHTML = coinSVG;
+  updateCoins();
+  loadRemoteQuestions().catch(()=>{});
+
+  let p = 0;
+  factIdx = Math.floor(Math.random()*FACTS.length);
+  $('factText').textContent = FACTS[factIdx];
+  factTimer = setInterval(()=>{
+    factIdx = (factIdx + 1) % FACTS.length;
+    const el = $('factText');
+    el.style.opacity = 0;
+    setTimeout(()=>{ el.textContent = FACTS[factIdx]; el.style.opacity = 1; }, 220);
+  }, 2600);
+
+  const tick = setInterval(()=>{
+    p += 1.1 + Math.random()*1.6;
+    if(p >= 100){
+      p = 100; clearInterval(tick); clearInterval(factTimer);
+      $('loadBar').style.width = '100%';
+      setTimeout(()=>show('screen-menu'), 520);
+    }
+    $('loadBar').style.width = Math.min(p,100) + '%';
+  }, 85);
+}
+
+/* =========================================================
+   11. МЕНЮ / СЛОЖНОСТЬ / КАТЕГОРИЯ / КОЛИЧЕСТВО
+   ========================================================= */
+function goMenu(){ show('screen-menu'); sndClick(); }
+function goDifficulty(){ sndClick(); syncDifficulty(S.difficulty); show('screen-difficulty'); }
+function paintSlider(el, pct, color){
+  el.style.background = 'linear-gradient(90deg, ' + color + ' 0%, ' + color + ' ' + pct + '%, rgba(27,31,59,.12) ' + pct + '%, rgba(27,31,59,.12) 100%)';
+}
+function syncDifficulty(v){
+  S.difficulty = v; save();
+  const d = DIFFS[v];
+  $('diffRange').value = v;
+  $('diffName').textContent = d.name;
+  $('diffName').style.color = d.color;
+  $('diffCoins').textContent = '+' + d.coins + ' за ответ';
+  document.querySelectorAll('#diffButtons button').forEach(b=>b.classList.toggle('on', +b.dataset.d === v));
+  paintSlider($('diffRange'), v/3*100, d.color);
+}
+function goCategory(){ sndClick(); renderCategories(); show('screen-category'); }
+function renderCategories(){
+  const grid = $('catGrid'); grid.innerHTML = '';
+  const all = [{key:'__mix', label:'Разные вопросы', letter:'?'}]
+    .concat(CATEGORIES.map(c=>({key:c, label:c, letter:c[0]})));
+  all.forEach((item, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'cat-btn' + (S.category === item.key ? ' on' : '');
+    const color = item.key === '__mix' ? '#8B6CF6' : CAT_COLORS[idx % CAT_COLORS.length];
+    b.innerHTML = '<span class="dot" style="background:'+color+'">'+item.letter+'</span><span>'+item.label+'</span>';
+    b.onclick = ()=>{
+      S.category = item.key; save(); sndClick();
+      document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    };
+    grid.appendChild(b);
+  });
+}
+function goCount(){ sndClick(); setCount(S.totalQuestions); show('screen-count'); }
+function setCount(v){
+  v = Math.max(1, Math.min(500, parseInt(v) || 1));
+  S.totalQuestions = v; save();
+  $('countDisplay').textContent = fmt(v);
+  $('countRange').value = v;
+  paintSlider($('countRange'), (v-1)/499*100, '#2FD07E');
+}
+function keypadInput(k){
+  sndClick();
+  let cur = String(S.totalQuestions);
+  if(k === 'c') cur = '';
+  else if(k === 'b') cur = cur.slice(0, -1);
+  else { if(cur === '0') cur = ''; if(cur.length >= 3) return; cur += k; }
+  let num = parseInt(cur || '0');
+  if(num > 500) num = 500;
+  if(num < 1) num = 1;
+  S.totalQuestions = num; save();
+  $('countDisplay').textContent = (cur === '' ? '0' : fmt(num));
+  $('countRange').value = num;
+  paintSlider($('countRange'), (num-1)/499*100, '#2FD07E');
+}
+
+/* =========================================================
+   12. ИГРА
+   ========================================================= */
+function normalizeQ(raw, key){
+  if(key === 'veryhard') return {q: raw[0], options: [], answer: raw[1]};
+  return {q: raw[0], options: raw[1].slice(), answer: raw[1][raw[2]]};
+}
+function randomCat(){ return CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)]; }
+function makeQuestion(key, cat){
+  const arr = (DB[cat] && DB[cat][key]) ? DB[cat][key] : [];
+  if(!arr.length) return null;
+  const raw = arr[Math.floor(Math.random()*arr.length)];
+  const q = normalizeQ(raw, key);
+  q.cat = cat;
+  q.id = qidFor(cat, key, q);
+  return q;
+}
+function buildQueue(){
+  const key = DIFFS[S.difficulty].key;
+  const cats = S.category === '__mix' ? CATEGORIES : [S.category];
+  let pool = [];
+  cats.forEach(c=>{
+    const arr = (DB[c] && DB[c][key]) ? DB[c][key] : [];
+    arr.forEach(r=>{
+      const n = normalizeQ(r, key);
+      n.cat = c;
+      n.id = qidFor(c, key, n);
+      pool.push(n);
+    });
+  });
+  if(!pool.length){ toast('Для этой категории пока нет вопросов'); return false; }
+
+  if(!S.usedIds) S.usedIds = {};
+  let available = pool.filter(n => !S.usedIds[n.id]);
+  if(available.length < S.totalQuestions){
+    // пул отвеченных исчерпан — сбрасываем отметки именно этих вопросов
+    pool.forEach(n => { delete S.usedIds[n.id]; });
+    save();
+    available = pool.slice();
+  }
+  shuffle(available);
+  const out = [];
+  let i = 0;
+  while(out.length < S.totalQuestions){
+    if(i > 0 && i % available.length === 0) shuffle(available);
+    out.push(available[i % available.length]);
+    i++;
+  }
+  ses.queue = out.slice(0, S.totalQuestions);
+  ses.index = 0; ses.correct = 0; ses.wrong = 0; ses.earned = 0; ses.penalty = 0; ses.locked = false;
+  ses.totalMs = 0; ses.runStart = null; ses.times = []; ses.qStart = null; ses.statsFinal = false;
+  if(timerInt){ clearInterval(timerInt); timerInt = null; }
+  return true;
+}
+async function startGame(){
+  sndClick();
+  try{ await Promise.race([loadRemoteQuestions(), new Promise(r=>setTimeout(r, 400))]); }catch(e){}
+  if(!buildQueue()) return;
+  show('screen-question');
+  renderQuestion();
+}
+function renderQuestion(){
+  ses.locked = false;
+  const q = ses.queue[ses.index];
+  const d = DIFFS[S.difficulty];
+  $('qProgress').textContent = 'Вопрос ' + (ses.index+1) + ' из ' + ses.queue.length;
+  $('qReward').textContent = '+' + d.coins + ' за ответ';
+  $('qBar').style.width = (ses.index / ses.queue.length * 100) + '%';
+  $('qCat').textContent = q.cat;
+  $('qText').textContent = q.q;
+  const reveal = $('answerReveal');
+  reveal.className = 'answer-reveal';
+  reveal.textContent = '';
+
+  const box = $('answers');
+  box.innerHTML = '';
+  const typeBox = $('typeBox');
+  $('sendBtn').disabled = false;
+  $('micBtn').disabled = false;
+
+  if(d.key === 'veryhard'){
+    typeBox.style.display = 'flex';
+    const inp = $('typeInput');
+    inp.value = ''; inp.disabled = false;
+    setTimeout(()=>inp.focus(), 120);
+  } else {
+    typeBox.style.display = 'none';
+    const opts = shuffle(q.options.slice());
+    opts.forEach(o=>{
+      const b = document.createElement('button');
+      b.className = 'ans';
+      b.textContent = o;
+      b.onclick = ()=>answer(o, b);
+      box.appendChild(b);
+    });
+  }
+  renderHints();
+  ses.qStart = Date.now();
+  startTimer();
+}
+function renderHints(){
+  const bar = $('hintBar');
+  bar.innerHTML = '';
+  const isVeryHard = DIFFS[S.difficulty].key === 'veryhard';
+  HINT_TYPES.forEach(h=>{
+    const count = S.hints[h.key] || 0;
+    const b = document.createElement('button');
+    b.className = 'hintbtn';
+    b.style.setProperty('--hc', h.color);
+    b.innerHTML =
+      '<span class="htile">' + h.icon + '</span>' +
+      '<span class="hlabel">' + h.name + '</span>' +
+      (count > 0 ? '<span class="hbadge">' + count + '</span>' : '');
+    b.disabled = count <= 0 || ses.locked || (h.key === 'fifty' && isVeryHard);
+    b.onclick = ()=>useHint(h.key);
+    bar.appendChild(b);
+  });
+}
+function answer(chosen, btn){
+  if(ses.locked) return;
+  ses.locked = true;
+  const q = ses.queue[ses.index];
+  const d = DIFFS[S.difficulty];
+  const ok = norm(chosen) === norm(q.answer);
+
+  if(ses.qStart){ ses.times.push((Date.now() - ses.qStart)/1000); ses.qStart = null; }
+
+  document.querySelectorAll('.ans').forEach(b=>{
+    b.disabled = true;
+    if(norm(b.textContent) === norm(q.answer)) b.classList.add('right');
+  });
+  if(!ok && btn) btn.classList.add('wrong');
+  if($('typeBox').style.display === 'flex'){
+    $('typeInput').disabled = true;
+    $('sendBtn').disabled = true;
+    $('micBtn').disabled = true;
+  }
+
+  const reveal = $('answerReveal');
+  if(ok){
+    ses.correct++;
+    ses.earned += d.coins;
+    addCoins(d.coins);
+    sndWin(); fireworks(); sndCoin();
+    reveal.className = 'answer-reveal show good';
+    reveal.textContent = 'Верно! +' + d.coins + ' монет';
+  } else {
+    ses.wrong++;
+    const pen = Math.max(1, Math.round(d.coins * 0.4));
+    ses.penalty += pen;
+    addCoins(-pen);
+    sndLose();
+    reveal.className = 'answer-reveal show bad';
+    reveal.textContent = 'Правильный ответ: ' + q.answer;
+  }
+  markUsed(q);
+  renderHints();
+  setTimeout(()=>nextQuestion(), ok ? 1250 : 1900);
+}
+function nextQuestion(){
+  ses.index++;
+  const total = ses.queue.length;
+  if(ses.index >= total){ showStats(true); return; }
+  // промежуточная статистика: каждые ~10% от заказанного (но не для коротких игр)
+  let interval = 0;
+  if(total > 10) interval = Math.max(2, Math.ceil(total * 0.1));
+  if(interval && ses.index % interval === 0){ showStats(false); return; }
+  renderQuestion();
+}
+function submitTyped(){
+  if(ses.locked) return;
+  const v = $('typeInput').value.trim();
+  if(!v){ toast('Введи ответ'); return; }
+  answer(v, null);
+}
+
+/* =========================================================
+   13. ПОДСКАЗКИ
+   ========================================================= */
+function useHint(type){
+  if(ses.locked) return;
+  if(!S.hints[type]) return toast('Нет подсказок');
+  const q = ses.queue[ses.index];
+  const d = DIFFS[S.difficulty];
+  const isVeryHard = d.key === 'veryhard';
+
+  if(type === 'fifty'){
+    if(isVeryHard) return toast('Недоступно для этого уровня');
+    const wrong = [...document.querySelectorAll('.ans')].filter(b=>norm(b.textContent) !== norm(q.answer));
+    shuffle(wrong);
+    wrong.slice(0,2).forEach(b=>{ b.style.opacity = .18; b.disabled = true; });
+    S.hints.fifty--; save(); sndClick(); renderHints(); return;
+  }
+  if(type === 'hint'){
+    const ans = String(q.answer);
+    const first = ans[0] ? ans[0].toUpperCase() : '';
+    toast('Ответ начинается на «' + first + '», длина ' + ans.length + ' симв.');
+    S.hints.hint--; save(); sndClick(); renderHints(); return;
+  }
+  if(type === 'skip'){
+    S.hints.skip--; save(); sndClick();
+    ses.locked = true;
+    ses.qStart = null;
+    markUsed(q);
+    toast('Вопрос пропущен');
+    setTimeout(()=>{ ses.locked = false; nextQuestion(); }, 420);
+    return;
+  }
+  if(type === 'replace'){
+    S.hints.replace--; save(); sndClick();
+    markUsed(q);
+    const cat = S.category === '__mix' ? randomCat() : S.category;
+    const nq = makeQuestion(d.key, cat);
+    if(nq) ses.queue[ses.index] = nq;
+    ses.locked = false;
+    renderQuestion();
+    return;
+  }
+  if(type === 'answer'){
+    S.hints.answer--; save(); sndClick();
+    ses.locked = true;
+    markUsed(q);
+    document.querySelectorAll('.ans').forEach(b=>{
+      b.disabled = true;
+      if(norm(b.textContent) === norm(q.answer)) b.classList.add('right');
+    });
+    if($('typeBox').style.display === 'flex'){
+      $('typeInput').value = q.answer;
+      $('typeInput').disabled = true;
+      $('sendBtn').disabled = true;
+      $('micBtn').disabled = true;
+    }
+    const reveal = $('answerReveal');
+    reveal.className = 'answer-reveal show good';
+    reveal.textContent = 'Правильный ответ: ' + q.answer;
+    renderHints();
+    setTimeout(()=>{ ses.locked = false; nextQuestion(); }, 1600);
+    return;
+  }
+}
+
+/* =========================================================
+   14. СТАТИСТИКА
+   ========================================================= */
+function statsBack(){
+  sndClick();
+  if(ses.statsFinal){ show('screen-menu'); }
+  else { show('screen-question'); startTimer(); renderQuestion(); }
+}
+function showStats(final){
+  pauseTimer();
+  ses.statsFinal = final;
+
+  const total = ses.earned - ses.penalty;
+  const sign = total >= 0 ? '+' : '−';
+  const elapsedSec = Math.floor(getElapsed()/1000);
+  const times = ses.times || [];
+  const avg = times.length ? times.reduce((a,b)=>a+b,0)/times.length : 0;
+
+  $('statsTitle').textContent = final ? 'Итоги игры' : 'Промежуточные итоги';
+
+  // похвала за скорость
+  let praise = '';
+  if(avg > 0){
+    if(avg <= 4) praise = 'Равных Вам нет!';
+    else if(avg <= 7) praise = 'Вы гений!';
+    else if(avg <= 11) praise = 'Вы умны!';
+  }
+  $('statsPraise').textContent = praise;
+
+  // время (иконка часов, вне таблицы)
+  $('statsClock').innerHTML =
+    '<span class="ci">' + clockSVG + '<b>' + fmtTime(elapsedSec) + '</b></span>' +
+    '<span>всего</span>' +
+    '<span>·</span>' +
+    '<span>на вопрос: <b>' + (avg ? avg.toFixed(1) + ' с' : '—') + '</b></span>';
+
+  $('statsTable').innerHTML =
+    '<tr><th>Показатель</th><th>Значение</th></tr>' +
+    '<tr><td>Правильных ответов</td><td class="plus">' + ses.correct + '</td></tr>' +
+    '<tr><td>Неправильных ответов</td><td class="minus">' + ses.wrong + '</td></tr>' +
+    '<tr><td>Выигрыш</td><td class="plus">+' + fmt(ses.earned) + '</td></tr>' +
+    '<tr><td>Штрафы</td><td class="minus">−' + fmt(ses.penalty) + '</td></tr>' +
+    '<tr class="total"><td>Итог</td><td>' + sign + fmt(Math.abs(total)) + '</td></tr>';
+
+  const btns = $('statsButtons'); btns.innerHTML = '';
+  if(final){
+    const b1 = document.createElement('button');
+    b1.className = 'next-btn'; b1.textContent = 'В меню';
+    b1.onclick = ()=>{ sndClick(); show('screen-menu'); };
+    const b2 = document.createElement('button');
+    b2.className = 'next-btn blue'; b2.style.marginTop = '10px';
+    b2.textContent = 'Играть снова';
+    b2.onclick = ()=>{ sndClick(); startGame(); };
+    btns.appendChild(b1); btns.appendChild(b2);
+  } else {
+    const left = ses.queue.length - ses.index;
+    const b = document.createElement('button');
+    b.className = 'next-btn';
+    b.textContent = 'Продолжить (осталось ' + left + ')';
+    b.onclick = ()=>{ sndClick(); show('screen-question'); startTimer(); renderQuestion(); };
+    btns.appendChild(b);
+  }
+  show('screen-stats');
+}
+
+/* =========================================================
+   15. МАГАЗИН ПОДСКАЗОК
+   ========================================================= */
+function openShop(){ sndClick(); show('screen-shop'); refreshShop(); }
+function refreshShop(){
+  updateCoins();
+  const body = $('shopBody');
+  body.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'hint-grid';
+  HINT_TYPES.forEach(h=>{
+    const count = S.hints[h.key] || 0;
+    const card = document.createElement('div');
+    card.className = 'hint-card';
+    card.innerHTML =
+      '<div class="hico">' + h.icon + '</div>' +
+      '<div class="hname">' + h.name + '</div>' +
+      '<div class="hdesc">' + h.desc + '</div>' +
+      '<div class="own-tag">В наличии: ' + count + '</div>' +
+      '<div class="hrow"><div class="price">' + coinSVG + fmt(h.price) + '</div>' +
+      '<button class="add-btn" data-h="' + h.key + '">Купить</button></div>';
+    const btn = card.querySelector('.add-btn');
+    btn.disabled = S.coins < h.price;
+    btn.onclick = ()=>buyHint(h.key);
+    grid.appendChild(card);
+  });
+  body.appendChild(grid);
+}
+function buyHint(key){
+  const h = HINT_TYPES.find(x=>x.key === key);
+  if(!h) return;
+  if(S.coins < h.price){ sndLose(); toast('Недостаточно монет'); return; }
+  S.coins -= h.price;
+  S.hints[key] = (S.hints[key] || 0) + 1;
+  save(); updateCoins(); sndCoin(); sndClick();
+  toast('Куплено: ' + h.name);
+  refreshShop();
+}
+
+/* =========================================================
+   16. ГОЛОС
+   ========================================================= */
+let recognition = null;
+function initVoice(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return false;
+  recognition = new SR();
+  recognition.lang = 'ru-RU';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onresult = (e)=>{
+    const text = e.results[0][0].transcript;
+    $('typeInput').value = text;
+    $('micBtn').classList.remove('rec');
+    toast('Услышано: ' + text);
+  };
+  recognition.onerror = ()=>{ $('micBtn').classList.remove('rec'); toast('Не удалось распознать речь'); };
+  recognition.onend = ()=>{ $('micBtn').classList.remove('rec'); };
+  return true;
+}
+$('micBtn').onclick = ()=>{
+  if(ses.locked) return;
+  if(!recognition && !initVoice()){ toast('Голосовой ввод не поддерживается в этом браузере'); return; }
+  try{ $('micBtn').classList.add('rec'); recognition.start(); }
+  catch(e){ $('micBtn').classList.remove('rec'); }
+};
+
+/* =========================================================
+   17. ОБРАБОТЧИКИ
+   ========================================================= */
+$('diffRange').addEventListener('input', e=>{ syncDifficulty(+e.target.value); sndClick(); });
+document.querySelectorAll('#diffButtons button').forEach(b=>{
+  b.onclick = ()=>{ syncDifficulty(+b.dataset.d); sndClick(); };
+});
+$('countRange').addEventListener('input', e=>setCount(+e.target.value));
+$('keypad').addEventListener('click', e=>{
+  const b = e.target.closest('button');
+  if(b) keypadInput(b.dataset.k);
+});
+$('sendBtn').onclick = submitTyped;
+$('typeInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') submitTyped(); });
+$('helpModal').addEventListener('click', e=>{ if(e.target === $('helpModal')) closeHelp(); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeHelp(); });
+
+/* =========================================================
+   18. СТАРТ
+   ========================================================= */
+startLoading();
+</script>
+</body>
+</html>
