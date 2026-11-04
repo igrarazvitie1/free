@@ -305,6 +305,32 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 .modal-card .next-btn{margin-top:10px;padding:14px;font-size:15px}
 .modal-card::-webkit-scrollbar{width:8px}
 .modal-card::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:8px}
+
+/* Help — увеличенная модалка, без смайликов */
+.modal-card.help-card{
+  max-width: 900px;
+  padding: 40px 44px;
+}
+.modal-card.help-card h3{
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+.modal-card.help-card p{
+  font-size: 18px;
+  line-height: 1.75;
+  margin-bottom: 24px;
+  color: #3A3F63;
+}
+.modal-card.help-card .next-btn{
+  padding: 18px;
+  font-size: 18px;
+}
+@media(max-width:520px){
+  .modal-card.help-card{padding:26px 22px}
+  .modal-card.help-card h3{font-size:22px}
+  .modal-card.help-card p{font-size:16px}
+}
+
 .setting-row{display:flex;justify-content:space-between;align-items:center;
   padding:14px 4px;border-bottom:2px dashed #E4E9F5;font-weight:800;font-size:14.5px;color:#4A5070;gap:12px}
 .setting-row:last-of-type{border-bottom:none}
@@ -327,7 +353,6 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
   display:flex;align-items:flex-start;gap:11px}
 .ach-item.locked{opacity:.55}
 .ach-item.unlocked{border-color:#2FD07E;background:#F1FFF7;box-shadow:0 3px 0 #2FD07E}
-.ach-icon{font-size:22px;flex-shrink:0;line-height:1}
 .ach-body{flex:1;min-width:0}
 .ach-name{font-weight:900;font-size:13.5px;color:#1B1F3B;margin-bottom:2px;line-height:1.2}
 .ach-desc{font-size:11.5px;font-weight:700;color:#7A9AA0;line-height:1.3}
@@ -340,30 +365,72 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 .record-val{font-weight:900;color:#1B1F3B;font-size:16px;text-align:right}
 .record-val.empty{color:#B0B5CB;font-weight:800;font-size:14px}
 
-/* ---------- МЕЛКИЕ УВЕДОМЛЕНИЯ ---------- */
+/* ---------- TOAST ---------- */
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,120px);z-index:300;
   background:#1B1F3B;color:#fff;font-weight:900;font-size:14px;padding:14px 22px;border-radius:999px;
   box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.2,.9,.3,1.4);
   pointer-events:none;max-width:88vw;text-align:center}
 .toast.on{transform:translate(-50%,0)}
 
-/* Достижение — минималистичное */
-.ach-toast{position:fixed;top:70px;left:50%;z-index:260;
-  transform:translate(-50%,-200%);
-  background:#1B1F3B;color:#fff;
-  padding:10px 14px;border-radius:12px;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);
-  transition:transform .4s cubic-bezier(.2,.9,.3,1.4);
-  display:flex;align-items:center;gap:10px;
-  max-width:min(400px,90vw);
-  border-left:3px solid #FFD54A;
-  pointer-events:none}
-.ach-toast.on{transform:translate(-50%,0)}
-.ach-toast .aticon{font-size:20px;flex-shrink:0;line-height:1}
-.ach-toast .abody{flex:1;min-width:0;font-size:12.5px;line-height:1.3;font-weight:700}
-.ach-toast .abody b{color:#FFD54A;font-weight:900;display:block;font-size:11px;letter-spacing:.5px;margin-bottom:1px}
-.ach-toast .areward{font-size:11px;font-weight:900;color:#7CF2B0;
-  background:rgba(124,242,176,.15);padding:3px 8px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+/* ---------- СТОПКА УВЕДОМЛЕНИЙ О ДОСТИЖЕНИЯХ ---------- */
+#achStack{
+  position:fixed;
+  top:70px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:260;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  pointer-events:none;
+  width:min(360px,90vw);
+  max-height:calc(100vh - 100px);
+  overflow:hidden;
+}
+.ach-toast{
+  position:relative;
+  background:#fff;
+  color:#1B1F3B;
+  padding:12px 16px 14px;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.28);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-30px);
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.4), opacity .35s ease, background-color .5s ease;
+  border-left:3px solid #4DA8FF;
+}
+.ach-toast.on{
+  opacity:1;
+  transform:translateY(0);
+}
+.ach-toast.dying{
+  background:#4DA8FF;
+  border-left-color:#4DA8FF;
+  color:#fff;
+}
+.ach-toast.dying .abody,
+.ach-toast.dying .abody b,
+.ach-toast.dying .areward{color:#fff}
+.ach-toast.dead{
+  opacity:0;
+  transform:translateY(-20px);
+}
+.ach-toast .abody{flex:1;min-width:0;font-size:13.5px;line-height:1.3;font-weight:800;color:#1B1F3B}
+.ach-toast .abody b{color:#4DA8FF;font-weight:900;display:block;font-size:10px;letter-spacing:1.2px;margin-bottom:2px}
+.ach-toast .areward{font-size:12px;font-weight:900;color:#2FD07E;white-space:nowrap;flex-shrink:0}
+.ach-toast .ach-bar{
+  position:absolute;
+  bottom:0;left:0;
+  height:3px;
+  background:#4DA8FF;
+  width:0;
+  border-radius:0 3px 3px 0;
+}
+.ach-toast.dying .ach-bar{background:rgba(255,255,255,.5)}
 
 #fx{position:fixed;inset:0;z-index:150;pointer-events:none}
 
@@ -379,7 +446,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
   .coins{font-size:14px;padding:5px 12px 5px 7px}
   .coins .ico{width:20px;height:20px}
   .streak-pill{padding:5px 10px !important;font-size:13px !important}
-  .ach-toast{top:62px}
+  #achStack{top:62px;width:calc(100vw - 24px)}
   .ach-grid{grid-template-columns:1fr}
 }
 @media(max-width:340px){
@@ -473,7 +540,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
     <div class="panel">
       <h2 class="ptitle">Выбор сложности</h2>
       <p class="psub">Чем сложнее — тем больше монет за ответ</p>
-      <span class="mode-badge" id="modeBadge" style="display:none">🔥 РЕЖИМ «БЕЗ ОШИБОК» · ×2</span>
+      <span class="mode-badge" id="modeBadge" style="display:none">РЕЖИМ «БЕЗ ОШИБОК» · ×2</span>
       <div class="diff-display">
         <div class="diff-name" id="diffName">Средняя</div>
         <div class="diff-coins"><span class="ico" id="diffCoinIco"></span><span id="diffCoins">+5 за ответ</span></div>
@@ -586,7 +653,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 <canvas id="fx"></canvas>
 
 <div class="modal" id="helpModal">
-  <div class="modal-card">
+  <div class="modal-card help-card">
     <h3 id="helpTitle">Как играть</h3>
     <p id="helpText">...</p>
     <button class="next-btn" onclick="closeHelp()">Понятно</button>
@@ -595,7 +662,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 
 <div class="modal" id="statsModal">
   <div class="modal-card">
-    <h3>📊 Статистика за всё время</h3>
+    <h3>Статистика за всё время</h3>
     <table class="stat" id="globalStatsTable"></table>
     <button class="next-btn" onclick="closeStats()">Понятно</button>
   </div>
@@ -603,7 +670,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 
 <div class="modal" id="achModal">
   <div class="modal-card wide">
-    <h3 id="achModalTitle">🏆 Достижения</h3>
+    <h3 id="achModalTitle">Достижения</h3>
     <div class="ach-grid" id="achGrid"></div>
     <button class="next-btn" onclick="closeAch()">Закрыть</button>
   </div>
@@ -611,7 +678,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 
 <div class="modal" id="recModal">
   <div class="modal-card">
-    <h3>📈 Рекорды</h3>
+    <h3>Рекорды</h3>
     <div id="recordsList"></div>
     <button class="next-btn" onclick="closeRec()">Понятно</button>
   </div>
@@ -619,17 +686,17 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 
 <div class="modal" id="settingsModal">
   <div class="modal-card">
-    <h3>⚙️ Настройки</h3>
+    <h3>Настройки</h3>
     <div class="setting-row">
-      <span>🔊 Звук</span>
+      <span>Звук</span>
       <button class="setting-toggle" id="soundToggle" onclick="toggleSound()"></button>
     </div>
     <div class="setting-row">
-      <span>📖 История вопросов</span>
+      <span>История вопросов</span>
       <button class="setting-btn" onclick="resetHistory()">Сбросить</button>
     </div>
     <div class="setting-row">
-      <span>📊 Статистика и достижения</span>
+      <span>Статистика и достижения</span>
       <button class="setting-btn danger" onclick="resetProgress()">Сбросить</button>
     </div>
     <button class="next-btn" onclick="closeSettings()">Готово</button>
@@ -638,9 +705,12 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF);font-s
 
 <div class="toast" id="toast"></div>
 
+<!-- Стопка уведомлений о достижениях: сверху, до 10 штук, через 3 сек заливаются голубым и гаснут -->
+<div id="achStack"></div>
+
 <script>
 /* =========================================================
-   1. ЛОКАЛЬНАЯ БАЗА (пустая — грузится с GitHub)
+   1. ЛОКАЛЬНАЯ БАЗА
    ========================================================= */
 const DB = {
 "География":{ easy:[], medium:[], hard:[], veryhard:[] },
@@ -800,38 +870,37 @@ const HINT_TYPES = [
 const HINT_ICONS = {};
 HINT_TYPES.forEach(h=>HINT_ICONS[h.key] = h.icon);
 
-/* 30 достижений */
 const ACHIEVEMENTS = [
-  { id:'correct_1',    icon:'🎯', name:'Первый шаг',        desc:'Первый правильный ответ',          reward:{coins:10},  check:s=>s.stats.correct>=1 },
-  { id:'correct_10',   icon:'🔟', name:'Десятка',           desc:'10 правильных ответов',            reward:{coins:20},  check:s=>s.stats.correct>=10 },
-  { id:'correct_25',   icon:'📚', name:'Четверть сотни',    desc:'25 правильных ответов',            reward:{coins:40},  check:s=>s.stats.correct>=25 },
-  { id:'correct_50',   icon:'📖', name:'Полсотни',          desc:'50 правильных ответов',            reward:{coins:60},  check:s=>s.stats.correct>=50 },
-  { id:'correct_100',  icon:'💯', name:'Сотня',             desc:'100 правильных ответов',           reward:{coins:100}, check:s=>s.stats.correct>=100 },
-  { id:'correct_250',  icon:'🎓', name:'Эрудит',            desc:'250 правильных ответов',           reward:{coins:200}, check:s=>s.stats.correct>=250 },
-  { id:'correct_500',  icon:'🏅', name:'Знаток',            desc:'500 правильных ответов',           reward:{coins:400}, check:s=>s.stats.correct>=500 },
-  { id:'correct_1000', icon:'👑', name:'Гуру',              desc:'1000 правильных ответов',          reward:{coins:800}, check:s=>s.stats.correct>=1000 },
-  { id:'wrong_10',     icon:'💪', name:'На ошибках учатся', desc:'10 неправильных ответов',          reward:{coins:15},  check:s=>s.stats.wrong>=10 },
-  { id:'wrong_50',     icon:'🧗', name:'Настойчивость',     desc:'50 неправильных ответов',          reward:{coins:30},  check:s=>s.stats.wrong>=50 },
-  { id:'streak_3',     icon:'🔥', name:'Разогрев',          desc:'Стрик из 3 ответов',               reward:{coins:15},  check:s=>s.records.longestStreak>=3 },
-  { id:'streak_5',     icon:'⚡', name:'Серия',             desc:'Стрик из 5 ответов',               reward:{coins:25},  check:s=>s.records.longestStreak>=5 },
-  { id:'streak_10',    icon:'🌟', name:'Огонь',             desc:'Стрик из 10 ответов',              reward:{coins:50},  check:s=>s.records.longestStreak>=10 },
-  { id:'streak_15',    icon:'☄️', name:'Пламя',             desc:'Стрик из 15 ответов',              reward:{coins:75},  check:s=>s.records.longestStreak>=15 },
-  { id:'streak_20',    icon:'🌪️', name:'Молния',            desc:'Стрик из 20 ответов',              reward:{coins:100}, check:s=>s.records.longestStreak>=20 },
-  { id:'streak_30',    icon:'🌊', name:'Ураган',            desc:'Стрик из 30 ответов',              reward:{coins:200}, check:s=>s.records.longestStreak>=30 },
-  { id:'coins_100',    icon:'💰', name:'Копилка',           desc:'Заработать 100 монет',             reward:{coins:20},  check:s=>s.stats.earned>=100 },
-  { id:'coins_500',    icon:'💵', name:'Кошелёк',           desc:'Заработать 500 монет',             reward:{coins:50},  check:s=>s.stats.earned>=500 },
-  { id:'coins_1000',   icon:'💎', name:'Богач',             desc:'Заработать 1000 монет',            reward:{coins:100}, check:s=>s.stats.earned>=1000 },
-  { id:'coins_5000',   icon:'🏦', name:'Казначей',          desc:'Заработать 5000 монет',            reward:{coins:500}, check:s=>s.stats.earned>=5000 },
-  { id:'games_5',      icon:'🎮', name:'Новичок',           desc:'Сыграть 5 игр',                    reward:{coins:20},  check:s=>s.stats.games>=5 },
-  { id:'games_10',     icon:'🎲', name:'Игрок',             desc:'Сыграть 10 игр',                   reward:{coins:40},  check:s=>s.stats.games>=10 },
-  { id:'games_25',     icon:'🎯', name:'Опытный',           desc:'Сыграть 25 игр',                   reward:{coins:100}, check:s=>s.stats.games>=25 },
-  { id:'games_50',     icon:'🏆', name:'Ветеран',           desc:'Сыграть 50 игр',                   reward:{coins:200}, check:s=>s.stats.games>=50 },
-  { id:'flawless_1',   icon:'✨', name:'Безупречно',        desc:'Пройти игру без ошибок',           reward:{coins:100}, check:s=>s.stats.flawlessGames>=1 },
-  { id:'flawless_5',   icon:'💫', name:'Идеально',          desc:'Пройти 5 игр без ошибок',          reward:{coins:300}, check:s=>s.stats.flawlessGames>=5 },
-  { id:'game_10q',     icon:'🎯', name:'Десяток за игру',   desc:'Ответить на 10 вопросов за игру',  reward:{coins:15},  check:s=>s.stats.maxQuestionsInGame>=10 },
-  { id:'game_50q',     icon:'🎪', name:'Полсотни за игру',  desc:'Ответить на 50 вопросов за игру',  reward:{coins:100}, check:s=>s.stats.maxQuestionsInGame>=50 },
-  { id:'game_100q',    icon:'🎭', name:'Сотня за игру',     desc:'Ответить на 100 вопросов за игру', reward:{coins:250}, check:s=>s.stats.maxQuestionsInGame>=100 },
-  { id:'flawless_10',  icon:'💠', name:'Бриллиант',         desc:'Пройти 10 игр без ошибок',         reward:{coins:500}, check:s=>s.stats.flawlessGames>=10 }
+  { id:'correct_1',    name:'Первый шаг',        desc:'Первый правильный ответ',          reward:{coins:10},  check:s=>s.stats.correct>=1 },
+  { id:'correct_10',   name:'Десятка',           desc:'10 правильных ответов',            reward:{coins:20},  check:s=>s.stats.correct>=10 },
+  { id:'correct_25',   name:'Четверть сотни',    desc:'25 правильных ответов',            reward:{coins:40},  check:s=>s.stats.correct>=25 },
+  { id:'correct_50',   name:'Полсотни',          desc:'50 правильных ответов',            reward:{coins:60},  check:s=>s.stats.correct>=50 },
+  { id:'correct_100',  name:'Сотня',             desc:'100 правильных ответов',           reward:{coins:100}, check:s=>s.stats.correct>=100 },
+  { id:'correct_250',  name:'Эрудит',            desc:'250 правильных ответов',           reward:{coins:200}, check:s=>s.stats.correct>=250 },
+  { id:'correct_500',  name:'Знаток',            desc:'500 правильных ответов',           reward:{coins:400}, check:s=>s.stats.correct>=500 },
+  { id:'correct_1000', name:'Гуру',              desc:'1000 правильных ответов',          reward:{coins:800}, check:s=>s.stats.correct>=1000 },
+  { id:'wrong_10',     name:'На ошибках учатся', desc:'10 неправильных ответов',          reward:{coins:15},  check:s=>s.stats.wrong>=10 },
+  { id:'wrong_50',     name:'Настойчивость',     desc:'50 неправильных ответов',          reward:{coins:30},  check:s=>s.stats.wrong>=50 },
+  { id:'streak_3',     name:'Разогрев',          desc:'Стрик из 3 ответов',               reward:{coins:15},  check:s=>s.records.longestStreak>=3 },
+  { id:'streak_5',     name:'Серия',             desc:'Стрик из 5 ответов',               reward:{coins:25},  check:s=>s.records.longestStreak>=5 },
+  { id:'streak_10',    name:'Огонь',             desc:'Стрик из 10 ответов',              reward:{coins:50},  check:s=>s.records.longestStreak>=10 },
+  { id:'streak_15',    name:'Пламя',             desc:'Стрик из 15 ответов',              reward:{coins:75},  check:s=>s.records.longestStreak>=15 },
+  { id:'streak_20',    name:'Молния',            desc:'Стрик из 20 ответов',              reward:{coins:100}, check:s=>s.records.longestStreak>=20 },
+  { id:'streak_30',    name:'Ураган',            desc:'Стрик из 30 ответов',              reward:{coins:200}, check:s=>s.records.longestStreak>=30 },
+  { id:'coins_100',    name:'Копилка',           desc:'Заработать 100 монет',             reward:{coins:20},  check:s=>s.stats.earned>=100 },
+  { id:'coins_500',    name:'Кошелёк',           desc:'Заработать 500 монет',             reward:{coins:50},  check:s=>s.stats.earned>=500 },
+  { id:'coins_1000',   name:'Богач',             desc:'Заработать 1000 монет',            reward:{coins:100}, check:s=>s.stats.earned>=1000 },
+  { id:'coins_5000',   name:'Казначей',          desc:'Заработать 5000 монет',            reward:{coins:500}, check:s=>s.stats.earned>=5000 },
+  { id:'games_5',      name:'Новичок',           desc:'Сыграть 5 игр',                    reward:{coins:20},  check:s=>s.stats.games>=5 },
+  { id:'games_10',     name:'Игрок',             desc:'Сыграть 10 игр',                   reward:{coins:40},  check:s=>s.stats.games>=10 },
+  { id:'games_25',     name:'Опытный',           desc:'Сыграть 25 игр',                   reward:{coins:100}, check:s=>s.stats.games>=25 },
+  { id:'games_50',     name:'Ветеран',           desc:'Сыграть 50 игр',                   reward:{coins:200}, check:s=>s.stats.games>=50 },
+  { id:'flawless_1',   name:'Безупречно',        desc:'Пройти игру без ошибок',           reward:{coins:100}, check:s=>s.stats.flawlessGames>=1 },
+  { id:'flawless_5',   name:'Идеально',          desc:'Пройти 5 игр без ошибок',          reward:{coins:300}, check:s=>s.stats.flawlessGames>=5 },
+  { id:'game_10q',     name:'Десяток за игру',   desc:'Ответить на 10 вопросов за игру',  reward:{coins:15},  check:s=>s.stats.maxQuestionsInGame>=10 },
+  { id:'game_50q',     name:'Полсотни за игру',  desc:'Ответить на 50 вопросов за игру',  reward:{coins:100}, check:s=>s.stats.maxQuestionsInGame>=50 },
+  { id:'game_100q',    name:'Сотня за игру',     desc:'Ответить на 100 вопросов за игру', reward:{coins:250}, check:s=>s.stats.maxQuestionsInGame>=100 },
+  { id:'flawless_10',  name:'Бриллиант',         desc:'Пройти 10 игр без ошибок',         reward:{coins:500}, check:s=>s.stats.flawlessGames>=10 }
 ];
 
 function $(id){return document.getElementById(id);}
@@ -860,7 +929,7 @@ function markUsed(q){
 }
 
 /* =========================================================
-   5. СОСТОЯНИЕ + LOCALSTORAGE
+   5. СОСТОЯНИЕ
    ========================================================= */
 const SAVE_KEY = 'viktorina_v3';
 const defaults = {
@@ -885,13 +954,11 @@ if(!S.achievements || typeof S.achievements !== 'object') S.achievements = {};
 if(typeof S.sound !== 'boolean') S.sound = true;
 if(S.category !== '__mix' && !CATEGORIES.includes(S.category)) S.category = '__mix';
 
-// Чистим legacy-поля от предыдущих версий
 if(S.daily){ delete S.daily; }
 if(S.stats.dailyAnswered !== undefined){ delete S.stats.dailyAnswered; }
 
 function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
-// Миграция количества вопросов на 0
 if(!S._v || S._v < 2){
   S.totalQuestions = 0;
   S._v = 2;
@@ -1014,7 +1081,7 @@ function pauseTimer(){
    9. ЭКРАНЫ
    ========================================================= */
 const HELP = {
-  'screen-menu':'Главное меню. Большая кнопка — обычная игра. Розовая кнопка — режим «Без ошибок» (одна ошибка и конец, но монеты ×2). Жёлтая — магазин подсказок. Кнопки в правом верхнем углу: 🏆 достижения, 🥇 рекорды, 📊 статистика, ⚙️ настройки и ? помощь.',
+  'screen-menu':'Главное меню. Большая кнопка — обычная игра. Розовая кнопка — режим «Без ошибок» (одна ошибка и конец, но монеты ×2). Жёлтая — магазин подсказок. Кнопки в правом верхнем углу: достижения, рекорды, статистика, настройки и помощь.',
   'screen-difficulty':'Выбери сложность: двигай ползунок или нажимай кнопки. Чем выше сложность, тем больше монет за ответ и тем больше времени даётся на бонус за скорость.',
   'screen-category':'Выбери тему вопросов. «Разные вопросы» — микс из всех категорий. Затем нажми «Дальше».',
   'screen-count':'Выбери количество вопросов — от 0 до 500. Двигай ползунок или вводи число кнопками. Минимум — 1, иначе игра не начнётся.',
@@ -1041,7 +1108,6 @@ function toast(msg){
   clearTimeout(t._tm); t._tm = setTimeout(()=>t.classList.remove('on'), 2100);
 }
 
-/* ---------- Модалки ---------- */
 function openStats(){
   sndClick();
   const st = S.stats;
@@ -1492,7 +1558,7 @@ function answer(chosen, btn){
 
     let msg = 'Верно! +' + total + ' монет';
     if(speedBonusPct > 0) msg += ' (бонус за скорость +' + bonus + ')';
-    if(ses.streak >= 3) msg += ' 🔥 Стрик ' + ses.streak;
+    if(ses.streak >= 3) msg += ' · серия ' + ses.streak;
     reveal.className = 'answer-reveal show good';
     reveal.textContent = msg;
   } else {
@@ -1772,10 +1838,13 @@ $('micBtn').onclick = ()=>{
 };
 
 /* =========================================================
-   18. ДОСТИЖЕНИЯ
+   18. ДОСТИЖЕНИЯ — стопка сверху, до 10 штук,
+       через 3 сек каждая заливается голубым и гаснет
    ========================================================= */
-let achQueue = [];
-let achShowing = false;
+const MAX_VISIBLE_ACH = 10;
+const ACH_LIFETIME_MS = 3000;
+const ACH_FADE_MS = 600;
+
 function checkAchievements(){
   if(!S.achievements) S.achievements = {};
   ACHIEVEMENTS.forEach(a=>{
@@ -1785,36 +1854,66 @@ function checkAchievements(){
         S.achievements[a.id] = Date.now();
         if(a.reward && a.reward.coins) addCoins(a.reward.coins);
         save();
-        achQueue.push(a);
+        pushAchToast(a);
         updateAchCount();
       }
     }catch(e){}
   });
-  if(!achShowing) drainAchQueue();
 }
-function drainAchQueue(){
-  if(!achQueue.length){ achShowing = false; return; }
-  achShowing = true;
-  const a = achQueue.shift();
-  showAchToast(a);
-  setTimeout(drainAchQueue, 2900);
-}
-function showAchToast(a){
-  const t = document.createElement('div');
-  t.className = 'ach-toast';
+
+function pushAchToast(a){
+  const stack = $('achStack');
+  if(!stack) return;
+
+  // Если уже 10 видимых — самую старую принудительно гасим
+  const current = stack.querySelectorAll('.ach-toast:not(.dead)');
+  if(current.length >= MAX_VISIBLE_ACH){
+    forceKill(current[0]);
+  }
+
   let rewardText = '';
-  if(a.reward && a.reward.coins) rewardText = '+' + a.reward.coins;
-  t.innerHTML =
-    '<span class="aticon">' + a.icon + '</span>' +
+  if(a.reward && a.reward.coins) rewardText = '+' + a.reward.coins + ' монет';
+
+  const el = document.createElement('div');
+  el.className = 'ach-toast';
+  el.innerHTML =
     '<div class="abody"><b>ДОСТИЖЕНИЕ</b>' + a.name + '</div>' +
-    (rewardText ? '<span class="areward">' + rewardText + ' 🪙</span>' : '');
-  document.body.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('on'));
-  setTimeout(()=>{
-    t.classList.remove('on');
-    setTimeout(()=>t.remove(), 500);
-  }, 2600);
+    (rewardText ? '<span class="areward">' + rewardText + '</span>' : '') +
+    '<div class="ach-bar"></div>';
+  stack.appendChild(el);
+
+  // Появление
+  requestAnimationFrame(()=>{
+    el.classList.add('on');
+    const bar = el.querySelector('.ach-bar');
+    if(bar){
+      // Полоска доезжает до конца ровно за 3 секунды
+      bar.style.transition = 'width ' + ACH_LIFETIME_MS + 'ms linear';
+      bar.style.width = '100%';
+    }
+  });
+
+  // Через 3 сек — плавно заливаем голубым и гасим
+  el._killTimer = setTimeout(()=>{
+    forceKill(el);
+  }, ACH_LIFETIME_MS);
 }
+
+function forceKill(el){
+  if(!el || el.classList.contains('dead')) return;
+  if(el._killTimer){ clearTimeout(el._killTimer); el._killTimer = null; }
+  el.classList.add('dying');
+  setTimeout(()=>{
+    el.classList.add('dead');
+    setTimeout(()=>{
+      if(el.parentNode) el.parentNode.removeChild(el);
+    }, ACH_FADE_MS);
+  }, 500);
+}
+
+/* =========================================================
+   19. МОДАЛКИ ДОСТИЖЕНИЙ И РЕКОРДОВ
+   ========================================================= */
 function renderAchievements(){
   updateAchCount();
   const grid = $('achGrid');
@@ -1822,16 +1921,15 @@ function renderAchievements(){
   const titleEl = $('achModalTitle');
   if(titleEl){
     const n = Object.keys(S.achievements || {}).length;
-    titleEl.innerHTML = '🏆 Достижения <span style="font-size:14px;opacity:.6;margin-left:6px;font-weight:800">' + n + ' / ' + ACHIEVEMENTS.length + '</span>';
+    titleEl.innerHTML = 'Достижения <span style="font-size:14px;opacity:.6;margin-left:6px;font-weight:800">' + n + ' / ' + ACHIEVEMENTS.length + '</span>';
   }
   ACHIEVEMENTS.forEach(a=>{
     const unlocked = !!S.achievements[a.id];
     const el = document.createElement('div');
     el.className = 'ach-item ' + (unlocked ? 'unlocked' : 'locked');
     let rewardText = '';
-    if(a.reward && a.reward.coins) rewardText = '+' + a.reward.coins + ' 🪙';
+    if(a.reward && a.reward.coins) rewardText = '+' + a.reward.coins + ' монет';
     el.innerHTML =
-      '<div class="ach-icon">' + (unlocked ? a.icon : '🔒') + '</div>' +
       '<div class="ach-body">' +
         '<div class="ach-name">' + a.name + '</div>' +
         '<div class="ach-desc">' + a.desc + '</div>' +
@@ -1841,16 +1939,13 @@ function renderAchievements(){
   });
 }
 
-/* =========================================================
-   19. РЕКОРДЫ
-   ========================================================= */
 function renderRecords(){
   const r = S.records;
   const el = $('recordsList');
   el.innerHTML =
-    '<div class="record-row"><span>🔥 Самый длинный стрик</span><span class="record-val' + (r.longestStreak ? '' : ' empty') + '">' + (r.longestStreak ? r.longestStreak + ' подряд' : '—') + '</span></div>' +
-    '<div class="record-row"><span>🏆 Лучшая игра</span><span class="record-val' + (r.bestGameCorrect ? '' : ' empty') + '">' + (r.bestGameCorrect ? r.bestGameCorrect + ' правильных' : '—') + '</span></div>' +
-    '<div class="record-row"><span>⚡ Самое быстрое прохождение</span><span class="record-val' + (r.fastestGame !== null ? '' : ' empty') + '">' + (r.fastestGame !== null ? fmtTime(r.fastestGame) : '—') + '</span></div>';
+    '<div class="record-row"><span>Самый длинный стрик</span><span class="record-val' + (r.longestStreak ? '' : ' empty') + '">' + (r.longestStreak ? r.longestStreak + ' подряд' : '—') + '</span></div>' +
+    '<div class="record-row"><span>Лучшая игра</span><span class="record-val' + (r.bestGameCorrect ? '' : ' empty') + '">' + (r.bestGameCorrect ? r.bestGameCorrect + ' правильных' : '—') + '</span></div>' +
+    '<div class="record-row"><span>Самое быстрое прохождение</span><span class="record-val' + (r.fastestGame !== null ? '' : ' empty') + '">' + (r.fastestGame !== null ? fmtTime(r.fastestGame) : '—') + '</span></div>';
 }
 
 /* =========================================================
