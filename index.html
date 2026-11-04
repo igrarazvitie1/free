@@ -22,15 +22,21 @@ body{
   user-select:none;
 }
 
-/* ---------- Фон: спокойный, тёмный, с плавно плывущими объектами ---------- */
+/* ---------- Фон: поярче + плавные плывущие объекты ---------- */
 .bg{
   position:fixed; inset:0; z-index:0; overflow:hidden;
-  background:linear-gradient(180deg, #151825 0%, #12142040 0%, #10121C 50%, #0C0E15 100%);
+  background:linear-gradient(170deg, #2a3155 0%, #222a4d 30%, #1a2145 60%, #131836 100%);
+}
+.bg::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(60% 40% at 20% 15%, rgba(124,242,176,.10) 0%, transparent 65%),
+    radial-gradient(55% 40% at 82% 25%, rgba(77,168,255,.10) 0%, transparent 65%),
+    radial-gradient(70% 50% at 50% 92%, rgba(139,108,246,.08) 0%, transparent 65%);
 }
 .bg::after{
-  content:""; position:absolute; inset:0;
-  background:radial-gradient(100% 60% at 50% 0%, rgba(124,242,176,.04) 0%, transparent 60%);
-  pointer-events:none;
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(90% 50% at 50% 0%, rgba(255,255,255,.04) 0%, transparent 60%);
 }
 .floaters{position:absolute; inset:0; overflow:hidden; pointer-events:none}
 .floater{
@@ -54,6 +60,10 @@ body{
   max-width:calc(100vw - 20px);
 }
 .hud.hidden{display:none}
+.hud-left{
+  position:fixed; top:14px; left:14px; z-index:60;
+  display:flex; gap:8px; align-items:center;
+}
 .coins{
   display:flex; align-items:center; gap:7px; background:#fff; border-radius:999px;
   padding:7px 14px 7px 9px; font-weight:900; font-size:16px; color:var(--ink);
@@ -78,6 +88,56 @@ body{
 .helpbtn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.18)}
 .helpbtn svg{width:18px; height:18px}
 
+/* Back button */
+.backbtn{display:none}
+.backbtn.on{display:grid}
+.backbtn svg{width:18px; height:18px}
+
+/* Level pill */
+.lvl-pill{
+  background:#fff;
+  border-radius:14px;
+  padding:5px 10px 6px;
+  min-width:68px;
+  box-shadow:0 3px 0 rgba(0,0,0,.15), 0 6px 14px rgba(0,0,0,.22);
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  flex-shrink:0;
+  cursor:help;
+}
+.lvl-row{
+  display:flex;
+  align-items:baseline;
+  gap:4px;
+  justify-content:center;
+  line-height:1;
+}
+.lvl-label{
+  font-size:9px;
+  font-weight:900;
+  color:#8A8FAC;
+  letter-spacing:0.6px;
+}
+.lvl-num{
+  font-size:15px;
+  font-weight:900;
+  color:#1B1F3B;
+}
+.lvl-bar{
+  height:3px;
+  background:#E4E9F5;
+  border-radius:999px;
+  overflow:hidden;
+}
+.lvl-fill{
+  height:100%;
+  background:linear-gradient(90deg, #7CF2B0, #4DA8FF);
+  border-radius:999px;
+  transition:width .3s ease;
+  width:0%;
+}
+
 /* ---------- Экраны ---------- */
 #screens{position:fixed; inset:0; z-index:10}
 .screen{
@@ -93,7 +153,7 @@ body{
 .screen::-webkit-scrollbar{width:6px}
 .screen::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:8px}
 
-/* Логотип: адаптивный, не вылезает, по центру */
+/* Логотип */
 .logo{
   font-weight:900; text-align:center; line-height:1;
   font-size:clamp(22px, 7vw, 52px);
@@ -122,10 +182,10 @@ body{
 .progress .bar{height:100%; width:0%; border-radius:999px;
   background:linear-gradient(90deg,#8FCBFF,#3D9BFF);
   transition:width .35s ease; box-shadow:0 0 12px rgba(77,168,255,.5)}
-.fact-box{width:100%; background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.1);
+.fact-box{width:100%; background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.12);
   border-radius:18px; padding:14px 16px; backdrop-filter:blur(8px)}
-.fact-label{font-weight:900; font-size:11px; letter-spacing:2.5px; color:#B8C0D8; margin-bottom:6px}
-.fact-box p{margin:0; color:#D8DCEC; font-size:14px; line-height:1.5; font-weight:700; min-height:44px; transition:opacity .22s}
+.fact-label{font-weight:900; font-size:11px; letter-spacing:2.5px; color:#C0C8E0; margin-bottom:6px}
+.fact-box p{margin:0; color:#DEE2F0; font-size:14px; line-height:1.5; font-weight:700; min-height:44px; transition:opacity .22s}
 
 /* ---------- МЕНЮ ---------- */
 #screen-menu{padding-top:24px; padding-bottom:32px}
@@ -163,7 +223,7 @@ body{
 .bigbtn.nomistakes:active{box-shadow:0 4px 0 #A81C5F, 0 6px 14px rgba(255,80,150,.3)}
 .bigbtn.nomistakes svg{width:52%; height:52%; color:#fff}
 
-/* ---------- ПАНЕЛИ (карточки контента) ---------- */
+/* ---------- ПАНЕЛИ ---------- */
 .panel{
   width:100%; max-width:640px;
   background:rgba(255,255,255,.98);
@@ -204,7 +264,6 @@ body{
   padding:5px 12px; font-weight:900; font-size:14px; color:#3A3F63}
 .diff-coins .ico{width:18px; height:18px}
 
-/* Кнопки сложности: растущий шрифт, но при переполнении — уменьшаем ВСЕ кнопки вместе (JS) */
 .diff-buttons{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:16px}
 .diff-buttons button{
   border:none; border-radius:14px;
@@ -249,21 +308,34 @@ body{
   color:#fff; font-size:11px; font-weight:900; letter-spacing:0}
 .cat-btn span:last-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .cat-btn.on{border-color:var(--mint-d); background:#F1FFF7; box-shadow:0 2px 0 var(--mint-d)}
+.cat-btn:hover{border-color:#C8D8FF; background:#FAFCFF}
 
 /* ---------- КОЛИЧЕСТВО ---------- */
 .count-display{text-align:center; font-size:clamp(42px,11vw,64px); font-weight:900; line-height:1;
   color:var(--ink); margin:6px 0 2px; letter-spacing:-1px}
-.count-label{text-align:center; font-weight:800; color:#9AA0BC; font-size:11.5px; letter-spacing:2px; margin-bottom:10px}
-.keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:14px}
-.keypad button{border:none; border-radius:13px; background:#fff; border:1.5px solid #E4E9F5;
-  font-family:inherit; font-weight:900; font-size:19px; color:var(--ink); padding:12px 0; cursor:pointer;
-  box-shadow:0 3px 0 #DDE3F2; transition:.12s}
-.keypad button:active{transform:translateY(2px); box-shadow:0 1px 0 #DDE3F2}
-.keypad button.util{background:#F4F7FF; color:#4A5070; font-size:15px}
-.quick-row{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; justify-content:center}
-.quick-row button{border:none; border-radius:999px; padding:6px 13px; font-family:inherit; font-weight:900;
-  font-size:12px; background:#EDF0FA; color:#4A5070; cursor:pointer; box-shadow:0 2px 0 #D3D9EC; transition:.12s}
-.quick-row button:active{transform:translateY(2px); box-shadow:0 1px 0 #D3D9EC}
+.count-label{text-align:center; font-weight:800; color:#9AA0BC; font-size:11.5px; letter-spacing:2px; margin-bottom:14px}
+.preset-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:8px}
+.preset-grid button{
+  border:2px solid #E4E9F5;
+  background:#fff;
+  border-radius:14px;
+  padding:16px 6px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:18px;
+  color:#2A2F52;
+  cursor:pointer;
+  box-shadow:0 3px 0 #E4E9F5;
+  transition:.12s;
+  line-height:1;
+}
+.preset-grid button:active{transform:translateY(2px); box-shadow:0 1px 0 #E4E9F5}
+.preset-grid button.on{
+  background:linear-gradient(180deg,#8DF7BC,#2FD07E);
+  color:#08381F;
+  border-color:#2FD07E;
+  box-shadow:0 3px 0 #1F9E5E;
+}
 
 /* ---------- ВОПРОС ---------- */
 #screen-question{padding-top:16px}
@@ -323,24 +395,24 @@ body{
 .answer-reveal.good{background:#DFFBEA; color:#0B5B34; border:1.5px solid #2FD07E}
 .answer-reveal.bad{background:#FFE5EC; color:#8A0F32; border:1.5px solid #FF5C8A}
 
-/* ---------- ПОДСКАЗКИ ---------- */
-.hintbar{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1.5px dashed #E4E9F5}
-.hintbtn{position:relative; display:flex; align-items:center; gap:7px; border:none; border-radius:12px;
-  padding:7px 10px 7px 7px; font-family:inherit; font-weight:900; font-size:11px; color:#2A2F52;
-  background:#F4F7FF; cursor:pointer; box-shadow:0 2px 0 #DDE3F2; transition:.12s; line-height:1.1}
+/* ---------- ПОДСКАЗКИ (увеличенные) ---------- */
+.hintbar{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; padding-top:14px; border-top:1.5px dashed #E4E9F5}
+.hintbtn{position:relative; display:flex; align-items:center; gap:10px; border:none; border-radius:15px;
+  padding:10px 15px 10px 10px; font-family:inherit; font-weight:900; font-size:13px; color:#2A2F52;
+  background:#F4F7FF; cursor:pointer; box-shadow:0 3px 0 #DDE3F2; transition:.12s; line-height:1.15}
 .hintbtn:active{transform:translateY(2px); box-shadow:0 1px 0 #DDE3F2}
-.hintbtn .htile{width:26px; height:26px; border-radius:8px; display:grid; place-items:center; flex:0 0 auto;
+.hintbtn .htile{width:38px; height:38px; border-radius:11px; display:grid; place-items:center; flex:0 0 auto;
   background:var(--hc,#3D9BFF); color:#fff; box-shadow:0 2px 0 rgba(0,0,0,.15)}
-.hintbtn .htile svg{width:15px; height:15px}
-.hintbtn .hlabel{max-width:68px; text-align:left}
-.hintbtn .hbadge{position:absolute; right:-5px; bottom:-5px; min-width:18px; height:18px; padding:0 5px;
-  border-radius:999px; background:#FF4F91; color:#fff; font-size:10.5px; font-weight:900;
-  display:flex; align-items:center; justify-content:center; border:2px solid #fff;
-  box-shadow:0 2px 5px rgba(0,0,0,.2)}
+.hintbtn .htile svg{width:21px; height:21px}
+.hintbtn .hlabel{max-width:96px; text-align:left}
+.hintbtn .hbadge{position:absolute; right:-6px; bottom:-6px; min-width:22px; height:22px; padding:0 6px;
+  border-radius:999px; background:#FF4F91; color:#fff; font-size:12px; font-weight:900;
+  display:flex; align-items:center; justify-content:center; border:2.5px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.22)}
 .hintbtn[disabled]{opacity:.4; pointer-events:none; box-shadow:none}
 .hintbtn[disabled] .hbadge{opacity:.6}
 
-/* ---------- ТАБЛИЦЫ (статистика) ---------- */
+/* ---------- ТАБЛИЦЫ ---------- */
 table.stat{
   width:100%;
   border-collapse:separate; border-spacing:0; border-radius:14px; overflow:hidden;
@@ -366,7 +438,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 .plus{color:#1F9E5E !important}
 .minus{color:#D6336C !important}
 
-/* ---------- СТАТИСТИКА (экран) ---------- */
+/* ---------- СТАТИСТИКА ---------- */
 .stats-card{
   width:100%; max-width:540px;
   background:#fff; border-radius:22px;
@@ -444,7 +516,6 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 .modal-card::-webkit-scrollbar{width:6px}
 .modal-card::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15); border-radius:8px}
 
-/* Help — увеличенная модалка, без смайликов */
 .modal-card.help-card{
   max-width:min(900px, 100%);
   padding:clamp(24px, 5vw, 40px) clamp(20px, 5vw, 44px);
@@ -482,7 +553,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 .setting-btn:active{transform:translateY(2px); box-shadow:0 1px 0 #DDE3F2}
 .setting-btn.danger{background:#FFE5EC; color:#8A0F32; box-shadow:0 2px 0 #FFB3CC}
 
-/* ---------- ДОСТИЖЕНИЯ (в модалке) ---------- */
+/* ---------- ДОСТИЖЕНИЯ ---------- */
 .ach-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; margin-top:4px}
 .ach-item{background:#fff; border-radius:12px; padding:11px 13px;
   border:1.5px solid #E4E9F5; box-shadow:0 2px 0 #E4E9F5;
@@ -494,7 +565,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 .ach-desc{font-size:11.5px; font-weight:700; color:#7A9AA0; line-height:1.3}
 .ach-reward{font-size:11px; font-weight:900; color:#1F9E5E; margin-top:4px}
 
-/* ---------- РЕКОРДЫ (в модалке) ---------- */
+/* ---------- РЕКОРДЫ ---------- */
 .record-row{display:flex; justify-content:space-between; align-items:center; gap:10px;
   padding:13px 4px; border-bottom:1.5px dashed #E4E9F5;
   font-weight:800; font-size:clamp(12.5px,3.4vw,14.5px); color:#4A5070}
@@ -512,7 +583,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 }
 .toast.on{transform:translate(-50%,0)}
 
-/* ---------- СТОПКА УВЕДОМЛЕНИЙ О ДОСТИЖЕНИЯХ ---------- */
+/* ---------- СТОПКА УВЕДОМЛЕНИЙ ---------- */
 #achStack{
   position:fixed;
   top:70px;
@@ -556,51 +627,82 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 .ach-toast .ach-bar{position:absolute; bottom:0; left:0; height:3px; background:#4DA8FF; width:0; border-radius:0 3px 3px 0}
 .ach-toast.dying .ach-bar{background:rgba(255,255,255,.5)}
 
+/* Level-up toast — фиолетовый акцент */
+.lvl-toast{border-left-color:#8B6CF6 !important}
+.lvl-toast .abody b{color:#8B6CF6 !important}
+.lvl-toast.dying{background:#8B6CF6 !important; border-left-color:#8B6CF6 !important}
+.lvl-toast .ach-bar{background:#8B6CF6 !important}
+
 #fx{position:fixed; inset:0; z-index:150; pointer-events:none}
 
 /* ---------- АДАПТИВ ---------- */
 @media (max-width: 520px){
-  .hintbtn{font-size:10.5px; padding:6px 9px 6px 6px}
-  .hintbtn .htile{width:24px; height:24px}
-  .hintbtn .htile svg{width:13px; height:13px}
+  .hintbtn{font-size:12px; padding:9px 12px 9px 9px; gap:8px}
+  .hintbtn .htile{width:34px; height:34px}
+  .hintbtn .htile svg{width:19px; height:19px}
+  .hintbtn .hlabel{max-width:82px}
   .q-card{padding:18px 15px}
   .panel{padding:18px 15px 20px}
   .stats-card{padding:16px}
   .ach-grid{grid-template-columns:1fr}
   #achStack{top:60px; width:calc(100vw - 24px)}
+  .preset-grid button{font-size:16px; padding:14px 4px}
 }
 
 @media (max-width: 400px){
   .hud{gap:4px; top:10px; right:8px}
+  .hud-left{gap:4px; top:10px; left:8px}
   .helpbtn{width:34px; height:34px}
   .helpbtn svg{width:15px; height:15px}
   .coins{font-size:13px; padding:5px 11px 5px 7px; gap:5px}
   .coins .ico{width:18px; height:18px}
   .streak-pill{padding:5px 9px !important; font-size:12px !important}
+  .lvl-pill{min-width:56px; padding:4px 8px 5px}
+  .lvl-num{font-size:13px}
+  .lvl-label{font-size:8px}
   .cat-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .hint-grid{grid-template-columns:1fr}
-  .keypad{gap:6px}
-  .keypad button{font-size:17px; padding:10px 0}
-  .quick-row button{font-size:11px; padding:5px 10px}
+  .preset-grid button{font-size:15px; padding:12px 4px; border-radius:12px}
+  .diff-buttons button{font-size:13px; padding:11px 6px}
 }
 
 @media (max-width: 340px){
   .hud{gap:3px; top:6px; right:5px}
+  .hud-left{gap:3px; top:6px; left:5px}
   .helpbtn{width:28px; height:28px}
   .helpbtn svg{width:12px; height:12px}
   .coins{font-size:11px; padding:3px 7px 3px 4px; gap:3px}
   .coins .ico{width:13px; height:13px}
   .streak-pill{padding:3px 6px !important; font-size:10px !important}
+  .lvl-pill{min-width:48px; padding:3px 6px 4px}
+  .lvl-num{font-size:11px}
+  .lvl-label{font-size:7px; letter-spacing:.3px}
   .diff-buttons{gap:6px}
-  .diff-buttons button{padding:10px 6px}
   .ans{padding:11px 13px; font-size:14px}
   .q-text{font-size:16px}
+  .hintbtn{font-size:11px; padding:8px 11px 8px 8px; gap:6px}
+  .hintbtn .htile{width:30px; height:30px}
+  .hintbtn .htile svg{width:17px; height:17px}
+  .hintbtn .hlabel{max-width:70px}
 }
 </style>
 </head>
 <body>
 
 <div class="bg"><div class="floaters" id="floaters"></div></div>
+
+<div class="hud-left" id="hudLeft">
+  <button class="helpbtn backbtn" id="backBtn" onclick="goBack()" aria-label="Назад">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <div class="lvl-pill" id="lvlPill" title="Опыт">
+    <div class="lvl-row">
+      <span class="lvl-label">LVL</span>
+      <span class="lvl-num" id="lvlNum">1</span>
+    </div>
+    <div class="lvl-bar"><div class="lvl-fill" id="lvlFill"></div></div>
+  </div>
+</div>
 
 <div class="hud hidden" id="hud">
   <div class="coins"><span class="ico" id="coinIco"></span><span id="coinCount">0</span></div>
@@ -702,9 +804,8 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
   <section class="screen" id="screen-category">
     <div class="panel">
       <h2 class="ptitle">Категория вопросов</h2>
-      <p class="psub">Выбери тему или играй в микс</p>
+      <p class="psub">Нажми на категорию — она откроется</p>
       <div class="cat-grid" id="catGrid"></div>
-      <button class="next-btn" onclick="goCount()">Дальше</button>
     </div>
   </section>
 
@@ -713,22 +814,15 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
       <h2 class="ptitle">Сколько вопросов?</h2>
       <div class="count-label">ВОПРОСОВ В ИГРЕ</div>
       <div class="count-display" id="countDisplay">0</div>
-      <input type="range" class="slider" id="countRange" min="0" max="500" step="1" value="0">
-      <div class="marks"><span>0</span><span>125</span><span>250</span><span>375</span><span>500</span></div>
-      <div class="quick-row">
-        <button onclick="setCount(1)">1</button>
-        <button onclick="setCount(10)">10</button>
-        <button onclick="setCount(25)">25</button>
-        <button onclick="setCount(50)">50</button>
-        <button onclick="setCount(100)">100</button>
-        <button onclick="setCount(500)">500</button>
-      </div>
-      <div class="keypad" id="keypad">
-        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-        <button data-k="c" class="util">C</button><button data-k="0">0</button>
-        <button data-k="b" class="util">←</button>
+      <div class="preset-grid" id="presetGrid">
+        <button data-v="1">1</button>
+        <button data-v="5">5</button>
+        <button data-v="10">10</button>
+        <button data-v="15">15</button>
+        <button data-v="25">25</button>
+        <button data-v="50">50</button>
+        <button data-v="70">70</button>
+        <button data-v="100">100</button>
       </div>
       <button class="next-btn" onclick="startGame()">Начать игру</button>
     </div>
@@ -851,23 +945,23 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 
 <script>
 /* =========================================================
-   0. ФОН — минималистично плывущие вверх объекты
+   0. ФОН — плавно плывущие точки
    ========================================================= */
 function initFloaters(){
   const c = document.getElementById('floaters');
   if(!c) return;
   const colors = [
-    'rgba(124,242,176,0.13)',
-    'rgba(77,168,255,0.11)',
-    'rgba(255,213,74,0.08)',
-    'rgba(255,255,255,0.05)',
-    'rgba(139,108,246,0.09)'
+    'rgba(124,242,176,0.16)',
+    'rgba(77,168,255,0.14)',
+    'rgba(255,213,74,0.10)',
+    'rgba(255,255,255,0.07)',
+    'rgba(139,108,246,0.12)'
   ];
-  const count = 22;
+  const count = 24;
   for(let i = 0; i < count; i++){
     const f = document.createElement('div');
     f.className = 'floater';
-    const size = 2 + Math.random() * 6;
+    const size = 2 + Math.random() * 7;
     f.style.width = size + 'px';
     f.style.height = size + 'px';
     f.style.left = (Math.random() * 100) + '%';
@@ -1004,7 +1098,6 @@ async function loadRemoteQuestions(){
         if(!r.ok){ console.error('[GitHub] '+r.status+' '+url); return; }
         const data = await r.json();
         mergeRemote(cat, data);
-        console.log('[GitHub] OK: '+cat+' ('+slug+'.json)');
       }catch(e){
         console.error('[GitHub] fail '+slug+'.json:', e);
       }
@@ -1015,7 +1108,7 @@ async function loadRemoteQuestions(){
 }
 
 /* =========================================================
-   4. УТИЛИТЫ И КОНСТАНТЫ
+   4. КОНСТАНТЫ И УТИЛИТЫ
    ========================================================= */
 const CATEGORIES = Object.keys(DB);
 const CAT_COLORS = ['#FF6FB5','#4DA8FF','#7CF2B0','#FFD54A','#8B6CF6','#FF9F4A','#2FD07E','#5BC0EB','#F45B69','#A0E7A0','#FF7A4A','#42C6A0','#B48CFF','#FF9FDC','#8EC5FF','#C5E86C','#FFB74A'];
@@ -1102,13 +1195,14 @@ function markUsed(q){
    ========================================================= */
 const SAVE_KEY = 'viktorina_v3';
 const defaults = {
-  coins:0, difficulty:1, category:'__mix', totalQuestions:0,
+  coins:0, difficulty:1, category:'__mix', totalQuestions:10,
   hints:{fifty:0, hint:0, skip:0, replace:0, answer:0},
   usedIds:{},
   sound:true,
   stats:{correct:0, wrong:0, earned:0, games:0, flawlessGames:0, maxQuestionsInGame:0},
   records:{longestStreak:0, bestGameCorrect:0, fastestGame:null},
-  achievements:{}
+  achievements:{},
+  player:{xp:0, level:1}
 };
 
 const rawStr = localStorage.getItem(SAVE_KEY);
@@ -1118,6 +1212,7 @@ let S = Object.assign({}, defaults, rawParsed);
 S.hints = Object.assign({fifty:0,hint:0,skip:0,replace:0,answer:0}, rawParsed.hints || {});
 S.stats = Object.assign({correct:0, wrong:0, earned:0, games:0, flawlessGames:0, maxQuestionsInGame:0}, rawParsed.stats || {});
 S.records = Object.assign({longestStreak:0, bestGameCorrect:0, fastestGame:null}, rawParsed.records || {});
+S.player = Object.assign({xp:0, level:1}, rawParsed.player || {});
 if(!S.usedIds || typeof S.usedIds !== 'object' || Array.isArray(S.usedIds)) S.usedIds = {};
 if(!S.achievements || typeof S.achievements !== 'object') S.achievements = {};
 if(typeof S.sound !== 'boolean') S.sound = true;
@@ -1126,13 +1221,19 @@ if(S.category !== '__mix' && !CATEGORIES.includes(S.category)) S.category = '__m
 if(S.daily){ delete S.daily; }
 if(S.stats.dailyAnswered !== undefined){ delete S.stats.dailyAnswered; }
 
-function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
-
-if(!S._v || S._v < 2){
-  S.totalQuestions = 0;
-  S._v = 2;
-  save();
+// Миграция старых сохранений: сброс количества на 10 (если было 0 и _v < 3)
+if(!S._v || S._v < 3){
+  if(!S.totalQuestions || S.totalQuestions < 1) S.totalQuestions = 10;
+  S._v = 3;
 }
+
+// Пересчёт уровня из XP (на случай миграции или порчи)
+const _calcLvl = Math.min(100, 1 + Math.floor((S.player.xp || 0) / 50));
+if(_calcLvl > S.player.level) S.player.level = _calcLvl;
+if(S.player.level > 100) S.player.level = 100;
+if(S.player.level < 1) S.player.level = 1;
+
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
 let pendingMode = 'normal';
 
@@ -1247,16 +1348,64 @@ function pauseTimer(){
 }
 
 /* =========================================================
-   9. АВТО-ПОДГОНКА КНОПОК СЛОЖНОСТИ
-   Все 4 кнопки уменьшаются вместе, пока ни одна не перестанет
-   вылезать / переноситься на 2 строки
+   9. УРОВЕНЬ ИГРОКА (XP)
+   ========================================================= */
+function getLevelProgress(){
+  const xp = S.player.xp || 0;
+  const level = S.player.level || 1;
+  if(level >= 100) return { percent:100, current:0, need:0 };
+  const levelStart = 50 * (level - 1);
+  const levelEnd = 50 * level;
+  const current = Math.max(0, xp - levelStart);
+  const need = levelEnd - levelStart;
+  const percent = Math.min(100, Math.max(0, (current / need) * 100));
+  return { percent, current, need };
+}
+
+function updateLevelUI(){
+  const el = $('lvlNum');
+  const fill = $('lvlFill');
+  const pill = $('lvlPill');
+  if(!el || !fill) return;
+  el.textContent = S.player.level;
+  const prog = getLevelProgress();
+  fill.style.width = prog.percent + '%';
+  if(pill){
+    if(S.player.level >= 100){
+      pill.title = 'Максимальный уровень · ' + (S.player.xp || 0) + ' XP';
+    } else {
+      pill.title = 'Уровень ' + S.player.level + ' · ' + prog.current + ' / ' + prog.need + ' XP до следующего';
+    }
+  }
+}
+
+function addXP(amount){
+  if(!S.player) S.player = { xp:0, level:1 };
+  S.player.xp = (S.player.xp || 0) + amount;
+  const newLevel = Math.min(100, 1 + Math.floor(S.player.xp / 50));
+  if(newLevel > S.player.level){
+    const levelsGained = newLevel - S.player.level;
+    let totalBonus = 0;
+    for(let l = S.player.level + 1; l <= newLevel; l++) totalBonus += 100;
+    S.player.level = newLevel;
+    addCoins(totalBonus);
+    setTimeout(() => {
+      showLevelToast(newLevel, totalBonus);
+      sndWin();
+      fireworks();
+    }, 600);
+  }
+  save();
+  updateLevelUI();
+}
+
+/* =========================================================
+   10. АВТО-ПОДГОНКА КНОПОК СЛОЖНОСТИ
    ========================================================= */
 function fitDiffButtons(){
   const btns = [...document.querySelectorAll('#diffButtons button')];
   if(!btns.length) return;
-  // Сброс — базовый размер
   btns.forEach(b => { b.style.fontSize = ''; });
-  // Форсируем reflow
   void btns[0].offsetHeight;
 
   let size = 14;
@@ -1271,26 +1420,62 @@ function fitDiffButtons(){
 }
 
 /* =========================================================
-   10. ЭКРАНЫ
+   11. ЭКРАНЫ И НАВИГАЦИЯ
    ========================================================= */
 const HELP = {
-  'screen-menu':'Главное меню. Большая кнопка — обычная игра. Розовая кнопка — режим «Без ошибок» (одна ошибка и конец, но монеты ×2). Жёлтая — магазин подсказок. Кнопки в правом верхнем углу: достижения, рекорды, статистика, настройки и помощь.',
+  'screen-menu':'Главное меню. Большая кнопка — обычная игра. Розовая кнопка — режим «Без ошибок» (одна ошибка и конец, но монеты ×2). Жёлтая — магазин подсказок. Кнопки в правом верхнем углу: достижения, рекорды, статистика, настройки и помощь. Слева вверху — уровень и кнопка «Назад».',
   'screen-difficulty':'Выбери сложность: двигай ползунок или нажимай кнопки. Чем выше сложность, тем больше монет за ответ и тем больше времени даётся на бонус за скорость.',
-  'screen-category':'Выбери тему вопросов. «Разные вопросы» — микс из всех категорий. Затем нажми «Дальше».',
-  'screen-count':'Выбери количество вопросов — от 0 до 500. Двигай ползунок или вводи число кнопками. Минимум — 1, иначе игра не начнётся.',
-  'screen-question':'Прочитай вопрос и выбери вариант. На «Очень сложной» введи ответ в поле или надиктуй. Быстрый ответ даёт бонус: на лёгком — до 3 с (×1.5), на среднем — до 5 с, на сложном — до 7 с, на очень сложном — до 10 с. Серия из 3+ правильных подряд запускает искры.',
+  'screen-category':'Нажми на любую категорию — она откроется сразу. «Разные вопросы» — микс из всех категорий.',
+  'screen-count':'Выбери количество вопросов: 1, 5, 10, 15, 25, 50, 70 или 100. Минимум — 1, иначе игра не начнётся.',
+  'screen-question':'Прочитай вопрос и выбери вариант. На «Очень сложной» введи ответ в поле или надиктуй. Быстрый ответ даёт бонус. Серия из 3+ правильных подряд запускает искры. Каждый ответ даёт 1 XP.',
   'screen-stats':'Статистика текущей игры. Над таблицей — общее время и среднее время на вопрос. Внизу — итог.',
   'screen-shop':'Магазин подсказок. Покупай за монеты, они появятся под вопросом.'
 };
 let currentScreen = 'screen-loading';
+
+function updateBackArrow(){
+  const back = $('backBtn');
+  if(!back) return;
+  const show = currentScreen !== 'screen-menu' && currentScreen !== 'screen-loading';
+  if(show) back.classList.add('on');
+  else back.classList.remove('on');
+}
+
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el = $(id); if(el) el.classList.add('active');
-  $('hud').classList.toggle('hidden', id === 'screen-loading');
+  $('hud').classList.toggle('hidden', id === 'screen-loading' || id === 'screen-menu');
   if(id === 'screen-shop') refreshShop();
   if(id === 'screen-difficulty') setTimeout(fitDiffButtons, 30);
+  if(id === 'screen-count') updatePresetHighlight();
   currentScreen = id;
+  updateBackArrow();
 }
+
+function goBack(){
+  sndClick();
+  if(currentScreen === 'screen-difficulty'){
+    show('screen-menu');
+  } else if(currentScreen === 'screen-category'){
+    show('screen-difficulty');
+    setTimeout(fitDiffButtons, 30);
+  } else if(currentScreen === 'screen-count'){
+    show('screen-category');
+  } else if(currentScreen === 'screen-shop'){
+    show('screen-menu');
+  } else if(currentScreen === 'screen-question'){
+    if(confirm('Выйти в меню? Прогресс игры будет потерян.')){
+      pauseTimer();
+      show('screen-menu');
+    }
+  } else if(currentScreen === 'screen-stats'){
+    if(ses.statsFinal) show('screen-menu');
+    else { show('screen-question'); startTimer(); renderQuestion(); }
+  } else {
+    show('screen-menu');
+  }
+}
+
 function openHelp(){
   $('helpTitle').textContent = 'Как играть';
   $('helpText').textContent = HELP[currentScreen] || 'Выбери, что делать дальше.';
@@ -1312,6 +1497,8 @@ function openStats(){
     '<tr><td>Заработано монет</td><td class="plus">+' + fmt(st.earned) + '</td></tr>' +
     '<tr><td>Игр сыграно</td><td>' + st.games + '</td></tr>' +
     '<tr><td>Игр без ошибок</td><td class="plus">' + st.flawlessGames + '</td></tr>' +
+    '<tr><td>Уровень</td><td class="plus">' + S.player.level + ' / 100</td></tr>' +
+    '<tr><td>Всего XP</td><td class="plus">' + fmt(S.player.xp || 0) + '</td></tr>' +
     '<tr class="total"><td>Достижений</td><td>' + Object.keys(S.achievements||{}).length + ' / ' + ACHIEVEMENTS.length + '</td></tr>';
   $('statsModal').classList.add('on');
 }
@@ -1357,7 +1544,7 @@ function resetHistory(){
   closeSettings();
 }
 function resetProgress(){
-  if(!confirm('Сбросить ВСЮ статистику, рекорды и достижения? Монеты и подсказки сохранятся.')) return;
+  if(!confirm('Сбросить ВСЮ статистику, рекорды и достижения? Монеты, подсказки и уровень сохранятся.')) return;
   S.stats = {correct:0, wrong:0, earned:0, games:0, flawlessGames:0, maxQuestionsInGame:0};
   S.records = {longestStreak:0, bestGameCorrect:0, fastestGame:null};
   S.achievements = {};
@@ -1368,7 +1555,7 @@ function resetProgress(){
 }
 
 /* =========================================================
-   11. МОНЕТЫ, СТРИК, СЧЁТЧИК ДОСТИЖЕНИЙ
+   12. МОНЕТЫ И СТРИК
    ========================================================= */
 function updateCoins(){ $('coinCount').textContent = fmt(S.coins); }
 function addCoins(n){ S.coins = Math.max(0, S.coins + n); updateCoins(); save(); }
@@ -1397,7 +1584,7 @@ function updateAchCount(){
 }
 
 /* =========================================================
-   12. ЗАГРУЗКА
+   13. ЗАГРУЗКА
    ========================================================= */
 const FACTS = [
 "У осьминога три сердца и голубая кровь.",
@@ -1422,13 +1609,10 @@ const FACTS = [
 "Самая маленькая страна в мире — Ватикан.",
 "Человек примерно на 60% состоит из воды.",
 "Первая компьютерная мышь была деревянной.",
-"Пчёл можно обучить распознавать человеческие лица.",
 "Страус — самая крупная птица, но он не летает.",
 "Римский Колизей мог вмещать около 50 000 зрителей.",
 "Мозг использует около 20% всей энергии тела.",
-"У медуз нет мозга, но есть нервная сеть.",
 "Мировой океан до сих пор изучен менее чем на 20%.",
-"Самая высокая гора от подножия до вершины — Мауна-Кеа.",
 "Звук не может распространяться в вакууме."
 ];
 let factIdx = 0, factTimer = null;
@@ -1438,6 +1622,7 @@ function startLoading(){
   updateCoins();
   updateStreakHUD();
   updateAchCount();
+  updateLevelUI();
   loadRemoteQuestions().catch(()=>{});
 
   let p = 0;
@@ -1462,7 +1647,7 @@ function startLoading(){
 }
 
 /* =========================================================
-   13. МЕНЮ / СЛОЖНОСТЬ / КАТЕГОРИЯ / КОЛИЧЕСТВО
+   14. СЛОЖНОСТЬ / КАТЕГОРИЯ / КОЛИЧЕСТВО
    ========================================================= */
 function goMenu(){ show('screen-menu'); sndClick(); }
 
@@ -1504,42 +1689,38 @@ function renderCategories(){
     const color = item.key === '__mix' ? '#8B6CF6' : CAT_COLORS[idx % CAT_COLORS.length];
     b.innerHTML = '<span class="dot" style="background:'+color+'">'+item.letter+'</span><span>'+item.label+'</span>';
     b.onclick = ()=>{
-      S.category = item.key; save(); sndClick();
-      document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on');
+      // Клик по категории сразу ведёт дальше
+      S.category = item.key;
+      save();
+      sndClick();
+      goCount();
     };
     grid.appendChild(b);
   });
 }
 function goCount(){ sndClick(); setCount(S.totalQuestions); show('screen-count'); }
+
 function setCount(v){
-  v = Math.max(0, Math.min(500, parseInt(v) || 0));
+  const allowed = [1,5,10,15,25,50,70,100];
+  v = parseInt(v) || 0;
+  if(!allowed.includes(v)){
+    // Если передали не из списка — привязываем к ближайшему
+    v = allowed.reduce((a,b)=>Math.abs(b-v) < Math.abs(a-v) ? b : a, allowed[0]);
+  }
   S.totalQuestions = v; save();
   $('countDisplay').textContent = fmt(v);
-  $('countRange').value = v;
-  paintSlider($('countRange'), v/500*100, '#2FD07E');
+  updatePresetHighlight();
 }
-function keypadInput(k){
-  sndClick();
-  let cur = String(S.totalQuestions);
-  if(k === 'c') cur = '';
-  else if(k === 'b') cur = cur.slice(0, -1);
-  else {
-    if(cur === '0' || cur === '') cur = '';
-    if(cur.length >= 3) return;
-    cur += k;
-  }
-  let num = parseInt(cur || '0');
-  if(num > 500) num = 500;
-  if(num < 0) num = 0;
-  S.totalQuestions = num; save();
-  $('countDisplay').textContent = (cur === '' ? '0' : fmt(num));
-  $('countRange').value = num;
-  paintSlider($('countRange'), num/500*100, '#2FD07E');
+function updatePresetHighlight(){
+  const grid = $('presetGrid');
+  if(!grid) return;
+  grid.querySelectorAll('button').forEach(b=>{
+    b.classList.toggle('on', +b.dataset.v === S.totalQuestions);
+  });
 }
 
 /* =========================================================
-   14. ИГРА
+   15. ИГРА
    ========================================================= */
 function normalizeQ(raw, key){
   if(key === 'veryhard') return {q: raw[0], options: [], answer: raw[1]};
@@ -1597,7 +1778,7 @@ function buildQueue(){
 async function startGame(){
   sndClick();
   if(S.totalQuestions < 1){
-    toast('Выбери количество вопросов (минимум 1)');
+    toast('Выбери количество вопросов');
     return;
   }
   if(remotePromise){
@@ -1676,6 +1857,8 @@ function renderHints(){
 function answer(chosen, btn){
   if(ses.locked) return;
   ses.locked = true;
+  addXP(1); // 1 XP за любой ответ
+
   const q = ses.queue[ses.index];
   const d = DIFFS[S.difficulty];
   const ok = norm(chosen) === norm(q.answer);
@@ -1790,7 +1973,7 @@ function submitTyped(){
 }
 
 /* =========================================================
-   15. ПОДСКАЗКИ
+   16. ПОДСКАЗКИ
    ========================================================= */
 function useHint(type){
   if(ses.locked) return;
@@ -1888,7 +2071,7 @@ function useHint(type){
 }
 
 /* =========================================================
-   16. СТАТИСТИКА КОНЦА ИГРЫ
+   17. СТАТИСТИКА КОНЦА ИГРЫ
    ========================================================= */
 function statsBack(){
   sndClick();
@@ -1966,7 +2149,7 @@ function showStats(final){
 }
 
 /* =========================================================
-   17. МАГАЗИН
+   18. МАГАЗИН
    ========================================================= */
 function openShop(){ sndClick(); show('screen-shop'); refreshShop(); }
 function refreshShop(){
@@ -2005,7 +2188,7 @@ function buyHint(key){
 }
 
 /* =========================================================
-   18. ГОЛОС
+   19. ГОЛОС
    ========================================================= */
 let recognition = null;
 function initVoice(){
@@ -2033,7 +2216,7 @@ $('micBtn').onclick = ()=>{
 };
 
 /* =========================================================
-   19. ДОСТИЖЕНИЯ — стопка, 3 сек, заливка голубым, исчезание
+   20. ДОСТИЖЕНИЯ И УВЕДОМЛЕНИЯ
    ========================================================= */
 const MAX_VISIBLE_ACH = 10;
 const ACH_LIFETIME_MS = 3000;
@@ -2057,11 +2240,8 @@ function checkAchievements(){
 function pushAchToast(a){
   const stack = $('achStack');
   if(!stack) return;
-
   const current = stack.querySelectorAll('.ach-toast:not(.dead)');
-  if(current.length >= MAX_VISIBLE_ACH){
-    forceKill(current[0]);
-  }
+  if(current.length >= MAX_VISIBLE_ACH) forceKill(current[0]);
 
   let rewardText = '';
   if(a.reward && a.reward.coins) rewardText = '+' + a.reward.coins + ' монет';
@@ -2073,7 +2253,6 @@ function pushAchToast(a){
     (rewardText ? '<span class="areward">' + rewardText + '</span>' : '') +
     '<div class="ach-bar"></div>';
   stack.appendChild(el);
-
   requestAnimationFrame(()=>{
     el.classList.add('on');
     const bar = el.querySelector('.ach-bar');
@@ -2082,9 +2261,33 @@ function pushAchToast(a){
       bar.style.width = '100%';
     }
   });
-
   el._killTimer = setTimeout(()=>{ forceKill(el); }, ACH_LIFETIME_MS);
 }
+
+function showLevelToast(level, bonus){
+  const stack = $('achStack');
+  if(!stack) return;
+  const current = stack.querySelectorAll('.ach-toast:not(.dead)');
+  if(current.length >= MAX_VISIBLE_ACH) forceKill(current[0]);
+
+  const el = document.createElement('div');
+  el.className = 'ach-toast lvl-toast';
+  el.innerHTML =
+    '<div class="abody"><b>НОВЫЙ УРОВЕНЬ</b>' + level + '</div>' +
+    (bonus > 0 ? '<span class="areward">+' + bonus + ' монет</span>' : '') +
+    '<div class="ach-bar"></div>';
+  stack.appendChild(el);
+  requestAnimationFrame(()=>{
+    el.classList.add('on');
+    const bar = el.querySelector('.ach-bar');
+    if(bar){
+      bar.style.transition = 'width ' + ACH_LIFETIME_MS + 'ms linear';
+      bar.style.width = '100%';
+    }
+  });
+  el._killTimer = setTimeout(()=>{ forceKill(el); }, ACH_LIFETIME_MS);
+}
+
 function forceKill(el){
   if(!el || el.classList.contains('dead')) return;
   if(el._killTimer){ clearTimeout(el._killTimer); el._killTimer = null; }
@@ -2097,9 +2300,6 @@ function forceKill(el){
   }, 500);
 }
 
-/* =========================================================
-   20. МОДАЛКИ ДОСТИЖЕНИЙ И РЕКОРДОВ
-   ========================================================= */
 function renderAchievements(){
   updateAchCount();
   const grid = $('achGrid');
@@ -2141,10 +2341,8 @@ $('diffRange').addEventListener('input', e=>{ syncDifficulty(+e.target.value); s
 document.querySelectorAll('#diffButtons button').forEach(b=>{
   b.onclick = ()=>{ syncDifficulty(+b.dataset.d); sndClick(); };
 });
-$('countRange').addEventListener('input', e=>setCount(+e.target.value));
-$('keypad').addEventListener('click', e=>{
-  const b = e.target.closest('button');
-  if(b) keypadInput(b.dataset.k);
+document.querySelectorAll('#presetGrid button').forEach(b=>{
+  b.onclick = ()=>{ setCount(+b.dataset.v); sndClick(); };
 });
 $('sendBtn').onclick = submitTyped;
 $('typeInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') submitTyped(); });
@@ -2159,7 +2357,6 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-// Пересчёт кнопок сложности при resize (debounce)
 let _fitTimer = null;
 window.addEventListener('resize', ()=>{
   if(_fitTimer) clearTimeout(_fitTimer);
