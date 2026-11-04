@@ -625,11 +625,11 @@ const coinSVG = '<svg viewBox="0 0 24 24" class="ico"><circle cx="12" cy="12" r=
 const clockSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
 const HINT_TYPES = [
-  {key:'fifty',   name:'50 на 50', price:30, color:'#3D9BFF', desc:'Убирает два неверных варианта',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/><path d="M4 7h16"/><path d="M4 17h10"/></svg>'},
-  {key:'hint',    name:'Буква',    price:20, color:'#E0A800', desc:'Показывает первую букву ответа',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19l7-14 7 14"/><path d="M8.5 14h7"/></svg>'},
-  {key:'skip',    name:'Пропуск',  price:25, color:'#FF7A3D', desc:'Пропустить вопрос без штрафа',       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l8 7-8 7z"/><path d="M17 5v14"/></svg>'},
-  {key:'replace', name:'Замена',   price:40, color:'#8B6CF6', desc:'Заменить вопрос на другой',           icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4"/><path d="M4 13a8 8 0 0 0 14 4"/><path d="M6 5v4h4"/><path d="M18 19v-4h-4"/></svg>'},
-  {key:'answer',  name:'Ответ',    price:60, color:'#FF4F91', desc:'Показывает правильный ответ',         icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'}
+  {key:'fifty',   name:'50 на 50', price:30, color:'#3D9BFF', desc:'Убирает неверные варианты, оставляя два',  icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/><path d="M4 7h16"/><path d="M4 17h10"/></svg>'},
+  {key:'hint',    name:'Буква',    price:20, color:'#E0A800', desc:'Показывает первую букву ответа',           icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19l7-14 7 14"/><path d="M8.5 14h7"/></svg>'},
+  {key:'skip',    name:'Пропуск',  price:25, color:'#FF7A3D', desc:'Пропустить вопрос без штрафа',             icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l8 7-8 7z"/><path d="M17 5v14"/></svg>'},
+  {key:'replace', name:'Замена',   price:40, color:'#8B6CF6', desc:'Заменить вопрос на другой',                 icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4"/><path d="M4 13a8 8 0 0 0 14 4"/><path d="M6 5v4h4"/><path d="M18 19v-4h-4"/></svg>'},
+  {key:'answer',  name:'Ответ',    price:60, color:'#FF4F91', desc:'Показывает правильный ответ',               icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'}
 ];
 const HINT_ICONS = {};
 HINT_TYPES.forEach(h=>HINT_ICONS[h.key] = h.icon);
@@ -674,7 +674,8 @@ function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(
 
 const ses = {
   queue:[], index:0, correct:0, wrong:0, earned:0, penalty:0, locked:false,
-  totalMs:0, runStart:null, times:[], qStart:null, statsFinal:false
+  totalMs:0, runStart:null, times:[], qStart:null, statsFinal:false,
+  usedHints:{}
 };
 
 /* =========================================================
@@ -865,7 +866,6 @@ function startLoading(){
   $('coinIco').innerHTML = coinSVG;
   $('diffCoinIco').innerHTML = coinSVG;
   updateCoins();
-  // Запускаем загрузку с GitHub в фоне
   loadRemoteQuestions().catch(()=>{});
 
   let p = 0;
@@ -983,7 +983,6 @@ function buildQueue(){
   if(!S.usedIds) S.usedIds = {};
   let available = pool.filter(n => !S.usedIds[n.id]);
   if(available.length < S.totalQuestions){
-    // пул отвеченных исчерпан — сбрасываем отметки именно этих вопросов
     pool.forEach(n => { delete S.usedIds[n.id]; });
     save();
     available = pool.slice();
@@ -999,6 +998,7 @@ function buildQueue(){
   ses.queue = out.slice(0, S.totalQuestions);
   ses.index = 0; ses.correct = 0; ses.wrong = 0; ses.earned = 0; ses.penalty = 0; ses.locked = false;
   ses.totalMs = 0; ses.runStart = null; ses.times = []; ses.qStart = null; ses.statsFinal = false;
+  ses.usedHints = {};
   if(timerInt){ clearInterval(timerInt); timerInt = null; }
   return true;
 }
@@ -1014,6 +1014,7 @@ async function startGame(){
 }
 function renderQuestion(){
   ses.locked = false;
+  ses.usedHints = {};
   const q = ses.queue[ses.index];
   const d = DIFFS[S.difficulty];
   $('qProgress').textContent = 'Вопрос ' + (ses.index+1) + ' из ' + ses.queue.length;
@@ -1055,6 +1056,7 @@ function renderHints(){
   const bar = $('hintBar');
   bar.innerHTML = '';
   const isVeryHard = DIFFS[S.difficulty].key === 'veryhard';
+  const used = ses.usedHints || {};
   HINT_TYPES.forEach(h=>{
     const count = S.hints[h.key] || 0;
     const b = document.createElement('button');
@@ -1064,7 +1066,8 @@ function renderHints(){
       '<span class="htile">' + h.icon + '</span>' +
       '<span class="hlabel">' + h.name + '</span>' +
       (count > 0 ? '<span class="hbadge">' + count + '</span>' : '');
-    b.disabled = count <= 0 || ses.locked || (h.key === 'fifty' && isVeryHard);
+    b.title = h.desc;
+    b.disabled = count <= 0 || ses.locked || used[h.key] === true || (h.key === 'fifty' && isVeryHard);
     b.onclick = ()=>useHint(h.key);
     bar.appendChild(b);
   });
@@ -1127,29 +1130,58 @@ function submitTyped(){
 }
 
 /* =========================================================
-   12. ПОДСКАЗКИ
+   12. ПОДСКАЗКИ (ИСПРАВЛЕННЫЕ)
    ========================================================= */
 function useHint(type){
   if(ses.locked) return;
   if(!S.hints[type]) return toast('Нет подсказок');
+  if(!ses.usedHints) ses.usedHints = {};
+  if(ses.usedHints[type]) return toast('Уже использовано на этом вопросе');
+
   const q = ses.queue[ses.index];
   const d = DIFFS[S.difficulty];
   const isVeryHard = d.key === 'veryhard';
 
+  /* ---------- 50 на 50: всегда оставляем ровно 2 варианта ---------- */
   if(type === 'fifty'){
     if(isVeryHard) return toast('Недоступно для этого уровня');
-    const wrong = [...document.querySelectorAll('.ans')].filter(b=>norm(b.textContent) !== norm(q.answer));
-    shuffle(wrong);
-    wrong.slice(0,2).forEach(b=>{ b.style.opacity = .18; b.disabled = true; });
-    S.hints.fifty--; save(); sndClick(); renderHints(); return;
+    const ansEls = [...document.querySelectorAll('.ans')];
+    if(!ansEls.length) return;
+    const wrongEls = ansEls.filter(b => norm(b.textContent) !== norm(q.answer));
+    if(wrongEls.length <= 1){ return toast('Подсказка не нужна'); }
+
+    shuffle(wrongEls);
+    const hideCount = wrongEls.length - 1; // оставить 1 неверный + 1 правильный = 2
+    wrongEls.slice(0, hideCount).forEach(b=>{
+      b.style.opacity = .18;
+      b.disabled = true;
+      b.classList.add('hidden-by-hint');
+    });
+
+    ses.usedHints[type] = true;
+    S.hints.fifty--; save(); sndClick(); renderHints();
+    return;
   }
+
+  /* ---------- Буква: первая буква + длина нормализованного ответа ---------- */
   if(type === 'hint'){
-    const ans = String(q.answer);
-    const first = ans[0] ? ans[0].toUpperCase() : '';
-    toast('Ответ начинается на «' + first + '», длина ' + ans.length + ' симв.');
-    S.hints.hint--; save(); sndClick(); renderHints(); return;
+    const raw = String(q.answer);
+    const clean = norm(raw);
+    if(!clean) return toast('Ответ пуст');
+    const first = clean[0].toUpperCase();
+    const isNum = /^\d+$/.test(clean);
+    const msg = isNum
+      ? 'Ответ — число из ' + clean.length + ' цифр, начинается на «' + first + '»'
+      : 'Ответ начинается на «' + first + '», длина ' + clean.length + ' симв.';
+    toast(msg);
+    ses.usedHints[type] = true;
+    S.hints.hint--; save(); sndClick(); renderHints();
+    return;
   }
+
+  /* ---------- Пропуск ---------- */
   if(type === 'skip'){
+    ses.usedHints[type] = true;
     S.hints.skip--; save(); sndClick();
     ses.locked = true;
     ses.qStart = null;
@@ -1158,17 +1190,29 @@ function useHint(type){
     setTimeout(()=>{ ses.locked = false; nextQuestion(); }, 420);
     return;
   }
+
+  /* ---------- Замена: сначала ищем новый вопрос, потом списываем ---------- */
   if(type === 'replace'){
+    const cat = S.category === '__mix' ? randomCat() : S.category;
+    let nq = null;
+    for(let i = 0; i < 6; i++){
+      const cand = makeQuestion(d.key, cat);
+      if(cand && cand.id !== q.id){ nq = cand; break; }
+    }
+    if(!nq) return toast('Нет вопросов для замены');
+
+    ses.usedHints[type] = true;
     S.hints.replace--; save(); sndClick();
     markUsed(q);
-    const cat = S.category === '__mix' ? randomCat() : S.category;
-    const nq = makeQuestion(d.key, cat);
-    if(nq) ses.queue[ses.index] = nq;
+    ses.queue[ses.index] = nq;
     ses.locked = false;
     renderQuestion();
     return;
   }
+
+  /* ---------- Ответ ---------- */
   if(type === 'answer'){
+    ses.usedHints[type] = true;
     S.hints.answer--; save(); sndClick();
     ses.locked = true;
     markUsed(q);
