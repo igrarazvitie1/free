@@ -53,31 +53,13 @@ body{
   100%{transform:translateY(-110vh) translateX(18px); opacity:0}
 }
 
-/* ---------- HUD ---------- */
-.hud{
-  position:fixed; top:14px; right:14px; z-index:60;
-  display:flex; gap:8px; align-items:center;
-  max-width:calc(100vw - 20px);
-}
-.hud.hidden{display:none}
+/* ---------- ЛЕВАЯ ПАНЕЛЬ (только тут теперь управление) ---------- */
 .hud-left{
   position:fixed; top:14px; left:14px; z-index:60;
   display:flex; gap:8px; align-items:center;
+  max-width:calc(100vw - 20px);
 }
-.coins{
-  display:flex; align-items:center; gap:7px; background:#fff; border-radius:999px;
-  padding:7px 14px 7px 9px; font-weight:900; font-size:16px; color:var(--ink);
-  box-shadow:0 3px 0 rgba(0,0,0,.15), 0 6px 16px rgba(0,0,0,.22);
-  white-space:nowrap; flex-shrink:0;
-}
-.coins .ico{width:22px; height:22px; display:block}
-.streak-pill{
-  background:linear-gradient(180deg,#FFE27A,#FFC61A) !important;
-  color:#5B3D00 !important;
-  padding:6px 11px !important;
-  gap:4px !important;
-  font-size:14px !important;
-}
+.hud-left.hidden{display:none}
 .helpbtn{
   width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
   background:linear-gradient(180deg,#fff,#E9EDF7); color:#3A3F63; font-weight:900; font-size:19px;
@@ -88,10 +70,8 @@ body{
 .helpbtn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.18)}
 .helpbtn svg{width:18px; height:18px}
 
-/* Back button */
 .backbtn{display:none}
 .backbtn.on{display:grid}
-.backbtn svg{width:18px; height:18px}
 
 /* Level pill */
 .lvl-pill{
@@ -142,6 +122,16 @@ body{
   transition:width .3s ease;
   width:0%;
 }
+
+/* Coin pill (слева, чтобы не занимать правый угол) */
+.coin-hud{
+  display:flex; align-items:center; gap:6px;
+  background:#fff; border-radius:999px;
+  padding:6px 13px 6px 8px; font-weight:900; font-size:15px; color:var(--ink);
+  box-shadow:0 3px 0 rgba(0,0,0,.15), 0 6px 14px rgba(0,0,0,.22);
+  white-space:nowrap; flex-shrink:0;
+}
+.coin-hud .ico{width:20px; height:20px; display:block}
 
 /* ---------- Экраны ---------- */
 #screens{position:fixed; inset:0; z-index:10}
@@ -540,7 +530,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
   font-size:clamp(15px, 3.8vw, 17px);
 }
 
-/* ---------- LVL МОДАЛКА ---------- */
+/* LVL модалка */
 .modal-card.lvl-modal-card{
   max-width:min(480px, 100%);
   padding:clamp(24px, 5vw, 34px) clamp(18px, 5vw, 30px);
@@ -594,9 +584,22 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
   font-size:clamp(11px, 3vw, 13px);
   font-weight:800;
   color:#8A8FAC;
-  margin-bottom:22px;
+  margin-bottom:10px;
 }
 .lvl-hero-total b{color:#1B1F3B}
+.lvl-hero-coins{
+  font-size:clamp(12px, 3.4vw, 14px);
+  font-weight:900;
+  color:#1E6B2E;
+  margin-bottom:22px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 12px;
+  background:#E4F7E9;
+  border-radius:999px;
+}
+.lvl-hero-coins .ico{width:16px; height:16px}
 .lvl-quick{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(76px, 1fr));
@@ -743,13 +746,11 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 }
 
 @media (max-width: 400px){
-  .hud{gap:4px; top:10px; right:8px}
-  .hud-left{gap:4px; top:10px; left:8px}
+  .hud-left{gap:5px; top:10px; left:8px}
   .helpbtn{width:34px; height:34px}
   .helpbtn svg{width:15px; height:15px}
-  .coins{font-size:13px; padding:5px 11px 5px 7px; gap:5px}
-  .coins .ico{width:18px; height:18px}
-  .streak-pill{padding:5px 9px !important; font-size:12px !important}
+  .coin-hud{font-size:13px; padding:5px 10px 5px 6px; gap:5px}
+  .coin-hud .ico{width:17px; height:17px}
   .lvl-pill{min-width:56px; padding:4px 8px 5px}
   .lvl-num{font-size:13px}
   .lvl-label{font-size:8px}
@@ -760,13 +761,11 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 }
 
 @media (max-width: 340px){
-  .hud{gap:3px; top:6px; right:5px}
-  .hud-left{gap:3px; top:6px; left:5px}
+  .hud-left{gap:4px; top:6px; left:5px}
   .helpbtn{width:28px; height:28px}
   .helpbtn svg{width:12px; height:12px}
-  .coins{font-size:11px; padding:3px 7px 3px 4px; gap:3px}
-  .coins .ico{width:13px; height:13px}
-  .streak-pill{padding:3px 6px !important; font-size:10px !important}
+  .coin-hud{font-size:11px; padding:3px 7px 3px 4px; gap:3px}
+  .coin-hud .ico{width:14px; height:14px}
   .lvl-pill{min-width:48px; padding:3px 6px 4px}
   .lvl-num{font-size:11px}
   .lvl-label{font-size:7px; letter-spacing:.3px}
@@ -788,46 +787,17 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
   <button class="helpbtn backbtn" id="backBtn" onclick="goBack()" aria-label="Назад">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
   </button>
-  <button class="lvl-pill" id="lvlPill" onclick="openLvlModal()" title="Уровень игрока" aria-label="Уровень игрока">
+  <button class="lvl-pill" id="lvlPill" onclick="openLvlModal()" title="Уровень и меню" aria-label="Уровень и меню">
     <div class="lvl-row">
       <span class="lvl-label">LVL</span>
       <span class="lvl-num" id="lvlNum">1</span>
     </div>
     <div class="lvl-bar"><div class="lvl-fill" id="lvlFill"></div></div>
   </button>
-</div>
-
-<div class="hud hidden" id="hud">
-  <div class="coins"><span class="ico" id="coinIco"></span><span id="coinCount">0</span></div>
-  <div class="coins streak-pill" id="streakHud" style="display:none">🔥<span id="streakCount">0</span></div>
-  <button class="helpbtn" id="achHudBtn" onclick="openAchievements()" aria-label="Достижения" title="Достижения">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-      <path d="M4 22h16"/>
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-    </svg>
-  </button>
-  <button class="helpbtn" onclick="openRecords()" aria-label="Рекорды" title="Рекорды">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="8" r="6"/>
-      <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
-    </svg>
-  </button>
-  <button class="helpbtn" onclick="openStats()" aria-label="Статистика" title="Статистика за всё время">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5"/><rect x="12" y="9" width="3" height="9"/><rect x="17" y="5" width="3" height="13"/>
-    </svg>
-  </button>
-  <button class="helpbtn" onclick="openSettings()" aria-label="Настройки" title="Настройки">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
-  </button>
-  <button class="helpbtn" onclick="openHelp()" aria-label="Помощь">?</button>
+  <div class="coin-hud" id="coinHud">
+    <span class="ico" id="coinIcoHud"></span>
+    <span id="coinCount">0</span>
+  </div>
 </div>
 
 <main id="screens">
@@ -981,7 +951,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 
 <canvas id="fx"></canvas>
 
-<!-- LVL МОДАЛКА -->
+<!-- LVL модалка — единственный вход в достижения/рекорды/статистику/настройки/помощь -->
 <div class="modal" id="lvlModal">
   <div class="modal-card lvl-modal-card">
     <h3>Уровень игрока</h3>
@@ -994,6 +964,10 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
     </div>
     <div class="lvl-hero-info" id="lvlModalInfo">0 / 50 XP до следующего</div>
     <div class="lvl-hero-total">Всего: <b id="lvlModalTotal">0</b> XP</div>
+    <div class="lvl-hero-coins">
+      <span class="ico" id="lvlModalCoinIco"></span>
+      <span id="lvlModalCoins">0 монет</span>
+    </div>
     <div class="lvl-quick">
       <button class="lvl-quick-btn" onclick="closeLvlModal();openAchievements()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
@@ -1105,7 +1079,7 @@ function initFloaters(){
 }
 
 /* =========================================================
-   1. ЛОКАЛЬНАЯ БАЗА
+   1. БАЗА ВОПРОСОВ
    ========================================================= */
 const DB = {
 "География":{ easy:[], medium:[], hard:[], veryhard:[] },
@@ -1499,14 +1473,6 @@ function updateLevelUI(){
   el.textContent = S.player.level;
   const prog = getLevelProgress();
   fill.style.width = prog.percent + '%';
-  const pill = $('lvlPill');
-  if(pill){
-    if(S.player.level >= 100){
-      pill.title = 'Максимальный уровень · ' + (S.player.xp || 0) + ' XP';
-    } else {
-      pill.title = 'Уровень ' + S.player.level + ' · ' + prog.current + ' / ' + prog.need + ' XP до следующего';
-    }
-  }
 }
 
 function openLvlModal(){
@@ -1515,19 +1481,20 @@ function openLvlModal(){
   const fillEl = $('lvlModalFill');
   const infoEl = $('lvlModalInfo');
   const totalEl = $('lvlModalTotal');
+  const coinsEl = $('lvlModalCoins');
+  const coinIcoEl = $('lvlModalCoinIco');
   if(!numEl) return;
 
   numEl.textContent = S.player.level;
   const prog = getLevelProgress();
   if(fillEl) fillEl.style.width = prog.percent + '%';
   if(infoEl){
-    if(S.player.level >= 100){
-      infoEl.textContent = 'Максимальный уровень достигнут';
-    } else {
-      infoEl.textContent = prog.current + ' / ' + prog.need + ' XP до следующего уровня';
-    }
+    if(S.player.level >= 100) infoEl.textContent = 'Максимальный уровень достигнут';
+    else infoEl.textContent = prog.current + ' / ' + prog.need + ' XP до следующего уровня';
   }
   if(totalEl) totalEl.textContent = fmt(S.player.xp || 0);
+  if(coinsEl) coinsEl.textContent = fmt(S.coins) + ' монет';
+  if(coinIcoEl && !coinIcoEl.innerHTML) coinIcoEl.innerHTML = coinSVG;
 
   $('lvlModal').classList.add('on');
 }
@@ -1578,10 +1545,10 @@ function fitDiffButtons(){
    11. ЭКРАНЫ
    ========================================================= */
 const HELP = {
-  'screen-menu':'Главное меню. Большая кнопка — обычная игра. Розовая — режим «Без ошибок» (одна ошибка и конец, монеты ×2). Жёлтая — магазин подсказок. Слева вверху — уровень игрока и кнопка «Назад». Нажми на уровень, чтобы открыть статистику, достижения, рекорды и настройки.',
+  'screen-menu':'Главное меню. Большая кнопка — обычная игра. Розовая — режим «Без ошибок» (одна ошибка и конец, монеты ×2). Жёлтая — магазин подсказок. Слева вверху — уровень, монеты и кнопка «Назад». Нажми на уровень, чтобы открыть достижения, рекорды, статистику и настройки.',
   'screen-difficulty':'Выбери сложность: двигай ползунок или нажимай кнопки. Чем выше сложность, тем больше монет за ответ и тем больше времени даётся на бонус за скорость.',
   'screen-category':'Нажми на любую категорию — она откроется сразу. «Разные вопросы» — микс из всех категорий.',
-  'screen-count':'Выбери количество вопросов: 1, 5, 10, 15, 25, 50, 70 или 100. Минимум — 1, иначе игра не начнётся.',
+  'screen-count':'Выбери количество вопросов: 1, 5, 10, 15, 25, 50, 70 или 100. Минимум — 1.',
   'screen-question':'Прочитай вопрос и выбери вариант. На «Очень сложной» введи ответ в поле или надиктуй. Быстрый ответ даёт бонус. Серия из 3+ правильных подряд запускает искры. Каждый ответ даёт 1 XP.',
   'screen-stats':'Статистика текущей игры. Над таблицей — общее время и среднее время на вопрос. Внизу — итог.',
   'screen-shop':'Магазин подсказок. Покупай за монеты, они появятся под вопросом.'
@@ -1599,8 +1566,11 @@ function updateBackArrow(){
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el = $(id); if(el) el.classList.add('active');
-  // HUD (правый верх) скрыт на экране загрузки и на главном меню
-  $('hud').classList.toggle('hidden', id === 'screen-loading' || id === 'screen-menu');
+  const leftBar = $('hudLeft');
+  if(leftBar){
+    if(id === 'screen-loading') leftBar.classList.add('hidden');
+    else leftBar.classList.remove('hidden');
+  }
   if(id === 'screen-shop') refreshShop();
   if(id === 'screen-difficulty') setTimeout(fitDiffButtons, 30);
   if(id === 'screen-count') updatePresetHighlight();
@@ -1698,34 +1668,28 @@ function resetProgress(){
   S.records = {longestStreak:0, bestGameCorrect:0, fastestGame:null};
   S.achievements = {};
   save();
-  updateAchCount();
   toast('Статистика и достижения сброшены');
   closeSettings();
 }
 
 /* =========================================================
-   12. МОНЕТЫ / СТРИК
+   12. МОНЕТЫ И СТРИК
    ========================================================= */
-function updateCoins(){ $('coinCount').textContent = fmt(S.coins); }
-function addCoins(n){ S.coins = Math.max(0, S.coins + n); updateCoins(); save(); }
-function updateStreakHUD(){
-  const el = $('streakHud');
-  if(!el) return;
-  if(ses.streak >= 2){ el.style.display = 'flex'; $('streakCount').textContent = ses.streak; }
-  else { el.style.display = 'none'; }
-  const qs = $('qStreak');
-  if(qs){
-    if(ses.streak >= 2){
-      qs.style.display = 'inline-flex';
-      qs.querySelector('span').textContent = ses.streak;
-    } else qs.style.display = 'none';
-  }
+function updateCoins(){
+  const el = $('coinCount');
+  if(el) el.textContent = fmt(S.coins);
 }
-function updateAchCount(){
-  const btn = $('achHudBtn');
-  if(!btn) return;
-  const n = Object.keys(S.achievements || {}).length;
-  btn.title = 'Достижения: ' + n + '/' + ACHIEVEMENTS.length;
+function addCoins(n){ S.coins = Math.max(0, S.coins + n); updateCoins(); save(); }
+
+function updateStreakHUD(){
+  const qs = $('qStreak');
+  if(!qs) return;
+  if(ses.streak >= 2){
+    qs.style.display = 'inline-flex';
+    qs.querySelector('span').textContent = ses.streak;
+  } else {
+    qs.style.display = 'none';
+  }
 }
 
 /* =========================================================
@@ -1762,11 +1726,14 @@ const FACTS = [
 ];
 let factIdx = 0, factTimer = null;
 function startLoading(){
-  $('coinIco').innerHTML = coinSVG;
-  $('diffCoinIco').innerHTML = coinSVG;
+  const coinIcoHud = $('coinIcoHud');
+  if(coinIcoHud) coinIcoHud.innerHTML = coinSVG;
+  const diffCoinIco = $('diffCoinIco');
+  if(diffCoinIco) diffCoinIco.innerHTML = coinSVG;
+  const lvlCoinIco = $('lvlModalCoinIco');
+  if(lvlCoinIco) lvlCoinIco.innerHTML = coinSVG;
   updateCoins();
   updateStreakHUD();
-  updateAchCount();
   updateLevelUI();
   loadRemoteQuestions().catch(()=>{});
 
@@ -2353,7 +2320,7 @@ $('micBtn').onclick = ()=>{
 };
 
 /* =========================================================
-   20. ДОСТИЖЕНИЯ И УВЕДОМЛЕНИЯ
+   20. ДОСТИЖЕНИЯ
    ========================================================= */
 const MAX_VISIBLE_ACH = 10;
 const ACH_LIFETIME_MS = 3000;
@@ -2369,7 +2336,6 @@ function checkAchievements(){
         if(a.reward && a.reward.coins) addCoins(a.reward.coins);
         save();
         pushAchToast(a);
-        updateAchCount();
       }
     }catch(e){}
   });
@@ -2428,7 +2394,6 @@ function forceKill(el){
 }
 
 function renderAchievements(){
-  updateAchCount();
   const grid = $('achGrid');
   grid.innerHTML = '';
   const titleEl = $('achModalTitle');
