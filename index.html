@@ -53,7 +53,7 @@ body{
   100%{transform:translateY(-110vh) translateX(18px); opacity:0}
 }
 
-/* ---------- ЛЕВАЯ ПАНЕЛЬ (только тут теперь управление) ---------- */
+/* ---------- HUD левый ---------- */
 .hud-left{
   position:fixed; top:14px; left:14px; z-index:60;
   display:flex; gap:8px; align-items:center;
@@ -61,24 +61,23 @@ body{
 }
 .hud-left.hidden{display:none}
 .helpbtn{
-  width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+  width:44px; height:44px; border-radius:50%; border:none; cursor:pointer;
   background:linear-gradient(180deg,#fff,#E9EDF7); color:#3A3F63; font-weight:900; font-size:19px;
   box-shadow:0 3px 0 rgba(0,0,0,.18), 0 6px 14px rgba(0,0,0,.22);
   transition:transform .12s, box-shadow .12s; font-family:inherit;
   display:grid; place-items:center; flex-shrink:0;
 }
 .helpbtn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.18)}
-.helpbtn svg{width:18px; height:18px}
+.helpbtn svg{width:20px; height:20px}
 
 .backbtn{display:none}
 .backbtn.on{display:grid}
 
-/* Level pill */
 .lvl-pill{
   background:#fff;
   border-radius:14px;
-  padding:5px 10px 6px;
-  min-width:68px;
+  padding:5px 12px 5px;
+  min-width:76px;
   box-shadow:0 3px 0 rgba(0,0,0,.15), 0 6px 14px rgba(0,0,0,.22);
   display:flex;
   flex-direction:column;
@@ -94,23 +93,24 @@ body{
 .lvl-row{
   display:flex;
   align-items:baseline;
-  gap:4px;
+  gap:6px;
   justify-content:center;
   line-height:1;
 }
 .lvl-label{
-  font-size:9px;
+  font-size:11px;
   font-weight:900;
   color:#8A8FAC;
-  letter-spacing:0.6px;
+  letter-spacing:0.8px;
 }
 .lvl-num{
-  font-size:15px;
+  font-size:22px;
   font-weight:900;
   color:#1B1F3B;
+  line-height:1;
 }
 .lvl-bar{
-  height:3px;
+  height:4px;
   background:#E4E9F5;
   border-radius:999px;
   overflow:hidden;
@@ -123,15 +123,16 @@ body{
   width:0%;
 }
 
-/* Coin pill (слева, чтобы не занимать правый угол) */
 .coin-hud{
-  display:flex; align-items:center; gap:6px;
-  background:#fff; border-radius:999px;
-  padding:6px 13px 6px 8px; font-weight:900; font-size:15px; color:var(--ink);
+  display:flex; align-items:center; gap:8px;
+  background:#fff; border-radius:14px;
+  padding:8px 16px 8px 10px; font-weight:900; font-size:20px; color:var(--ink);
   box-shadow:0 3px 0 rgba(0,0,0,.15), 0 6px 14px rgba(0,0,0,.22);
   white-space:nowrap; flex-shrink:0;
+  min-height:44px;
+  line-height:1;
 }
-.coin-hud .ico{width:20px; height:20px; display:block}
+.coin-hud .ico{width:28px; height:28px; display:block}
 
 /* ---------- Экраны ---------- */
 #screens{position:fixed; inset:0; z-index:10}
@@ -208,7 +209,7 @@ body{
   box-shadow:0 8px 0 #D19B00, 0 14px 26px rgba(255,198,26,.35), inset 0 -6px 0 rgba(0,0,0,.1);
 }
 .bigbtn.shop:active{box-shadow:0 4px 0 #D19B00, 0 6px 14px rgba(255,198,26,.3)}
-.bigbtn.shop svg{width:52%; height:52%; color:#5B3D00}
+.bigbtn.shop svg{width:52%; height:52%; color:#fff; filter:drop-shadow(0 2px 0 rgba(0,0,0,.22))}
 .bigbtn.nomistakes{
   width:clamp(80px, 20vw, 106px); height:clamp(80px, 20vw, 106px);
   background:linear-gradient(180deg,#FF9FC7,#E62E85);
@@ -341,7 +342,7 @@ body{
 }
 .q-top > span{display:inline-flex; align-items:center; gap:4px; flex-shrink:0}
 .q-top .qtime svg{width:13px; height:13px}
-.q-top .qstreak{padding:3px 9px; border-radius:999px;
+.q-top .qstreak{padding:3px 10px; border-radius:999px;
   background:linear-gradient(180deg,#FFE27A,#FFC61A); color:#5B3D00; font-weight:900;
   box-shadow:0 2px 0 #D19B00}
 .q-top .qmode{padding:3px 9px; border-radius:999px;
@@ -452,19 +453,17 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 .stats-clock .ci{display:inline-flex; align-items:center; gap:5px}
 .stats-clock .ci svg{width:15px; height:15px}
 .stats-clock b{color:#0B2C4D}
-.praise{text-align:center; font-weight:900; font-size:clamp(18px,4.2vw,25px); margin-bottom:10px;
-  background:linear-gradient(90deg, #B0D0FF, #A0E0C0);
+.praise{text-align:center; font-weight:900; font-size:clamp(15px,3.6vw,22px); margin-bottom:12px;
+  background:linear-gradient(90deg, #8FCBFF, #7CF2B0);
   -webkit-background-clip:text; background-clip:text; color:transparent;
-  letter-spacing:.5px; min-height:0}
+  letter-spacing:.3px; line-height:1.3; padding:0 4px}
 .praise:empty{display:none}
 
 /* ---------- МАГАЗИН ---------- */
 #screen-shop{background:linear-gradient(180deg,#F3FBEE 0%, #EAF9E1 100%); padding-top:14px}
-.shop-head{width:100%; max-width:900px; display:flex; align-items:center; gap:10px; margin-bottom:14px}
-.iconbtn{width:40px; height:40px; border-radius:13px; border:none; background:#fff; color:#2F5D34;
-  display:grid; place-items:center; cursor:pointer; box-shadow:0 3px 0 #C9E4BC; transition:.12s; flex:0 0 auto}
-.iconbtn:active{transform:translateY(2px); box-shadow:0 1px 0 #C9E4BC}
-.shop-title{font-weight:900; font-size:18px; color:#2F5D34; letter-spacing:.4px; margin-right:auto}
+.shop-head{width:100%; max-width:900px; display:flex; align-items:center; justify-content:center;
+  margin-bottom:16px; padding:0 4px}
+.shop-title{font-weight:900; font-size:18px; color:#2F5D34; letter-spacing:.4px; text-align:center}
 .shop-body{width:100%; max-width:900px}
 .hint-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px}
 .hint-card{background:#fff; border-radius:20px; padding:16px;
@@ -530,7 +529,6 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
   font-size:clamp(15px, 3.8vw, 17px);
 }
 
-/* LVL модалка */
 .modal-card.lvl-modal-card{
   max-width:min(480px, 100%);
   padding:clamp(24px, 5vw, 34px) clamp(18px, 5vw, 30px);
@@ -588,18 +586,18 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 }
 .lvl-hero-total b{color:#1B1F3B}
 .lvl-hero-coins{
-  font-size:clamp(12px, 3.4vw, 14px);
+  font-size:clamp(13px, 3.6vw, 15px);
   font-weight:900;
   color:#1E6B2E;
   margin-bottom:22px;
   display:inline-flex;
   align-items:center;
-  gap:5px;
-  padding:6px 12px;
+  gap:6px;
+  padding:7px 14px;
   background:#E4F7E9;
   border-radius:999px;
 }
-.lvl-hero-coins .ico{width:16px; height:16px}
+.lvl-hero-coins .ico{width:18px; height:18px}
 .lvl-quick{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(76px, 1fr));
@@ -746,14 +744,15 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 }
 
 @media (max-width: 400px){
-  .hud-left{gap:5px; top:10px; left:8px}
-  .helpbtn{width:34px; height:34px}
-  .helpbtn svg{width:15px; height:15px}
-  .coin-hud{font-size:13px; padding:5px 10px 5px 6px; gap:5px}
-  .coin-hud .ico{width:17px; height:17px}
-  .lvl-pill{min-width:56px; padding:4px 8px 5px}
-  .lvl-num{font-size:13px}
-  .lvl-label{font-size:8px}
+  .hud-left{gap:6px; top:10px; left:8px}
+  .helpbtn{width:40px; height:40px}
+  .helpbtn svg{width:17px; height:17px}
+  .lvl-pill{min-width:66px; padding:5px 10px 5px}
+  .lvl-label{font-size:10px}
+  .lvl-num{font-size:18px}
+  .lvl-bar{height:3px}
+  .coin-hud{font-size:17px; padding:7px 13px 7px 9px; gap:6px; min-height:40px}
+  .coin-hud .ico{width:24px; height:24px}
   .cat-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .hint-grid{grid-template-columns:1fr}
   .preset-grid button{font-size:15px; padding:12px 4px; border-radius:12px}
@@ -762,13 +761,14 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 
 @media (max-width: 340px){
   .hud-left{gap:4px; top:6px; left:5px}
-  .helpbtn{width:28px; height:28px}
-  .helpbtn svg{width:12px; height:12px}
-  .coin-hud{font-size:11px; padding:3px 7px 3px 4px; gap:3px}
-  .coin-hud .ico{width:14px; height:14px}
-  .lvl-pill{min-width:48px; padding:3px 6px 4px}
-  .lvl-num{font-size:11px}
-  .lvl-label{font-size:7px; letter-spacing:.3px}
+  .helpbtn{width:34px; height:34px}
+  .helpbtn svg{width:14px; height:14px}
+  .lvl-pill{min-width:58px; padding:4px 8px 4px}
+  .lvl-label{font-size:8px}
+  .lvl-num{font-size:15px}
+  .lvl-bar{height:2px}
+  .coin-hud{font-size:14px; padding:5px 10px 5px 7px; gap:4px; min-height:34px}
+  .coin-hud .ico{width:20px; height:20px}
   .diff-buttons{gap:6px}
   .ans{padding:11px 13px; font-size:14px}
   .q-text{font-size:16px}
@@ -896,7 +896,7 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
       <div class="q-top">
         <span id="qProgress">Вопрос 1 из 10</span>
         <span id="qReward">+5 за ответ</span>
-        <span class="qstreak" id="qStreak" style="display:none">🔥 <span>0</span></span>
+        <span class="qstreak" id="qStreak" style="display:none">серия <span>0</span></span>
         <span class="qmode" id="qMode" style="display:none">×2</span>
         <span class="qtime" id="qTime">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
@@ -939,9 +939,6 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 
   <section class="screen" id="screen-shop">
     <div class="shop-head">
-      <button class="iconbtn" onclick="goMenu()" aria-label="Назад">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
-      </button>
       <div class="shop-title">МАГАЗИН ПОДСКАЗОК</div>
     </div>
     <div class="shop-body" id="shopBody"></div>
@@ -951,7 +948,6 @@ table.stat tr.total td{background:linear-gradient(180deg,#B8E0FF,#8FCBFF); font-
 
 <canvas id="fx"></canvas>
 
-<!-- LVL модалка — единственный вход в достижения/рекорды/статистику/настройки/помощь -->
 <div class="modal" id="lvlModal">
   <div class="modal-card lvl-modal-card">
     <h3>Уровень игрока</h3>
@@ -1275,6 +1271,7 @@ function $(id){return document.getElementById(id);}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
 function norm(s){return String(s).toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]/gi,'').trim();}
+function pickRandom(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
 function hashStr(s){
   let h = 2166136261;
@@ -1375,7 +1372,7 @@ function sndLose(){ tone(220, 0, 0.16, 'sawtooth', 0.09); tone(155, 0.13, 0.28, 
 function sndCoin(){ tone(1200, 0, 0.07, 'square', 0.06); tone(1600, 0.06, 0.09, 'square', 0.05); }
 
 /* =========================================================
-   7. ФЕЙЕРВЕРК + КОМБО
+   7. ФЕЙЕРВЕРК
    ========================================================= */
 const fxCanvas = $('fx'), fxCtx = fxCanvas.getContext('2d');
 let particles = [], fxRunning = false;
@@ -1452,7 +1449,7 @@ function pauseTimer(){
 }
 
 /* =========================================================
-   9. XP И УРОВЕНЬ
+   9. XP, УРОВЕНЬ, ПОХВАЛА
    ========================================================= */
 function getLevelProgress(){
   const xp = S.player.xp || 0;
@@ -1520,6 +1517,100 @@ function addXP(amount){
   }
   save();
   updateLevelUI();
+}
+
+/* Расширенная похвала: зависит от точности и от скорости */
+function getPraise(correct, answered, avgTime){
+  if(answered === 0) return '';
+  const pct = (correct / answered) * 100;
+
+  let main;
+  if(pct === 100){
+    main = pickRandom([
+      'Безупречно!',
+      'Идеально!',
+      'Ни одной ошибки!',
+      'Стопроцентный результат!',
+      'Чистая победа!'
+    ]);
+  } else if(pct >= 85){
+    main = pickRandom([
+      'Вы гений!',
+      'Равных Вам нет!',
+      'Феноменально!',
+      'Блестяще!',
+      'Великолепно!',
+      'Выше всяких похвал!',
+      'Впечатляющий результат!'
+    ]);
+  } else if(pct >= 65){
+    main = pickRandom([
+      'Вы умны!',
+      'Отличный результат!',
+      'Впечатляюще!',
+      'Здорово!',
+      'Уверенная игра!',
+      'Хороший уровень!'
+    ]);
+  } else if(pct >= 45){
+    main = pickRandom([
+      'Хороший результат!',
+      'Неплохо!',
+      'Уверенно!',
+      'Так держать!',
+      'Солидно!'
+    ]);
+  } else if(pct >= 25){
+    main = pickRandom([
+      'Есть куда расти!',
+      'Неплохое начало!',
+      'Продолжайте тренироваться!',
+      'Уже что-то!',
+      'Дальше будет лучше!'
+    ]);
+  } else {
+    main = pickRandom([
+      'Не сдавайтесь!',
+      'Попробуйте ещё раз!',
+      'В следующий раз получится!',
+      'Начните сначала — и всё выйдет!',
+      'Главное — не останавливаться!'
+    ]);
+  }
+
+  let speed = '';
+  if(avgTime > 0){
+    if(avgTime <= 3){
+      speed = pickRandom([
+        'Молниеносно!',
+        'Скорость света!',
+        'Стрелой!',
+        'Быстрее ветра!'
+      ]);
+    } else if(avgTime <= 5){
+      speed = pickRandom([
+        'Быстро!',
+        'Скорость на высоте!',
+        'На одном дыхании!',
+        'Без запинки!'
+      ]);
+    } else if(avgTime <= 8){
+      speed = pickRandom([
+        'Хороший темп.',
+        'Ровный темп.',
+        'Темп в норме.',
+        'Спокойный ход.'
+      ]);
+    } else if(avgTime <= 12){
+      speed = pickRandom([
+        'Можно и побыстрее.',
+        'Не спешите — это тоже хорошо.'
+      ]);
+    }
+    // если avgTime > 12 — не добавляем speed, чтобы не звучало грубо
+  }
+
+  return speed ? main + ' ' + speed : main;
 }
 
 /* =========================================================
@@ -2211,13 +2302,8 @@ function showStats(final){
     ? (ses.mode === 'nomistakes' && ses.wrong > 0 ? 'Режим завершён' : 'Итоги игры')
     : 'Промежуточные итоги';
 
-  let praise = '';
-  if(avg > 0){
-    if(avg <= 4) praise = 'Равных Вам нет!';
-    else if(avg <= 7) praise = 'Вы гений!';
-    else if(avg <= 11) praise = 'Вы умны!';
-  }
-  $('statsPraise').textContent = praise;
+  const answered = ses.correct + ses.wrong;
+  $('statsPraise').textContent = getPraise(ses.correct, answered, avg);
 
   $('statsClock').innerHTML =
     '<span class="ci">' + clockSVG + '<b>' + fmtTime(elapsedSec) + '</b></span>' +
